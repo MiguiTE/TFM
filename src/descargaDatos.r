@@ -1,64 +1,46 @@
----
-title: "Descarga de datos"
-author: "Miguel Traspuesto Abascal"
-date: "12 de marzo de 2019"
-output: html_document
----
-
 # Importar paquetes
 
-Para descargar los datos necesitamos el paquete `loadeR` del conjunto de paquetes `climate4R` del **Grupo de meteorología de Santander**.
+#Para descargar los datos necesitamos el paquete `loadeR` del conjunto de paquetes `climate4R` del **Grupo de meteorología de Santander**.
 
-```{r}
 library(loadeR)
-```
 
 # Gestión de directorios
 
-Crea un directorio en el que se guardaran los datos
+#Crea un directorio en el que se guardaran los datos
 
-```{r}
 ruta = "/home/jovyan/TFM/"
 if(!di.exists(paste0(ruta, "data", collapse = ""))){
   dir.create(paste0(ruta, "data", collapse = ""))
 }
-```
 
 # Cargar datos para *Random Forest*
 
-Iniciar sesión en [UDG-TAP](http://www.meteo.unican.es/udg-tap/home). Además guarda la ruta en donde se encuentra el conjunto de datos.
+#Iniciar sesión en [UDG-TAP](http://www.meteo.unican.es/udg-tap/home). Además guarda la ruta en donde se encuentra el conjunto de datos.
 
-```{r}
 name = readline(prompt = "Nombre de usuario UDG: ")
 pass = readline(prompt = "Contraseña UDG: ")
 loginUDG(username = name, password = pass)
 ERA.url = "http://meteo.unican.es/tds5/dodsC/interim/daily/interim20_daily.ncml"
-```
 
 ## Escoger las variables
 
-Observamos cuáles son las variables del conjunto de reanálisis de *ERA-Interim*
+#Observamos cuáles son las variables del conjunto de reanálisis de *ERA-Interim*
 
-```{r}
 di.pred = dataInventory(dataset=ERA.url, return.stats = FALSE)
 for(var in names(di.pred)){
   print(paste(var, di.pred[[var]][["Description"]], collapse = ": "))
 }
-```
 
-Para *Random Forest* nos quedaremos con prácticamente todas, menos las variables objetivo (`MN2T`, `MX2t`, `TP`) y la
-temperatura a nivel del mar (`SST`).
+#Para *Random Forest* nos quedaremos con prácticamente todas, menos las variables objetivo (`MN2T`, `MX2t`, `TP`) y la
+#temperatura a nivel del mar (`SST`).
 
-```{r}
 variables = names(di.pred)
 variables = setdiff(variables, c("MN2T", "MX2T", "TP", "SST"))
-```
 
 ## Descargar los datos
 
-Una vez tenemos las variables que vamos a usar, las descargamos y creamos un `MultiGrid` con todas ellas.
+#Una vez tenemos las variables que vamos a usar, las descargamos y creamos un `MultiGrid` con todas ellas.
 
-```{r}
 grid.list <- lapply(variables, function(x) {
   loadGridData(dataset = ERA.url,
                 var = x,
@@ -68,27 +50,21 @@ grid.list <- lapply(variables, function(x) {
 })
 xRF = makeMultiGrid(grid.list)
 save(xRF, file = paste0(ruta, "/data/xRF.rda", collapse=""))
-```
 Antes de seguir liberamos un poco de memoria.
 
-```{r}
 rm(xRF, grid.list)
-```
 
 # Cargar datos para *GLM* y *KNN*
 
 ## Escoger las variables
 
-En este caso usamos las variables del artículo de referencia.
+#En este caso usamos las variables del artículo de referencia.
 
-```{r}
 variables = c("SLP","2T", "T500", "T700", "T850", "Q500", "Q850", "Z500")
-```
 ## Descargar los datos
 
-Una vez tenemos las variables que vamos a usar, las descargamos y creamos un `MultiGrid` con todas ellas.
+#Una vez tenemos las variables que vamos a usar, las descargamos y creamos un `MultiGrid` con todas ellas.
 
-```{r}
 grid.list <- lapply(variables, function(x) {
   loadGridData(dataset = ERA.url,
                 var = x,
@@ -98,4 +74,3 @@ grid.list <- lapply(variables, function(x) {
 })
 x = makeMultiGrid(grid.list)
 save(x, file = paste0(ruta, "/data/x.rda", collapse=""))
-```
