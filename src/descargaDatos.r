@@ -9,7 +9,7 @@ library(transformeR)
 
 #Crea un directorio en el que se guardaran los datos
 
-ruta = "/home/jovyan/TFM/TFM"
+ruta = "/home/jovyan/TFM/TFM/"
 if(!dir.exists(paste0(ruta, "data", collapse = ""))){
   dir.create(paste0(ruta, "data", collapse = ""))
 }
