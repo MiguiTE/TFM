@@ -1,6 +1,6 @@
 # Importar paquetes
 
-#Para descargar los datos necesitamos el paquete `loadeR` del conjunto de paquetes `climate4R` del **Grupo de meteorología de Santander**.
+#Para descargar los datos necesitamos el paquete `loadeR` y transformeR del conjunto de paquetes `climate4R` del **Grupo de meteorología de Santander**.
 
 library(loadeR)
 
@@ -49,7 +49,7 @@ grid.list <- lapply(variables, function(x) {
                 years = 1979:2008)
 })
 xRF = makeMultiGrid(grid.list)
-save(xRF, file = paste0(ruta, "/data/xRF.rda", collapse=""))
+save(xRF, file = paste0(ruta, "data/xRF.rda", collapse = ""))
 Antes de seguir liberamos un poco de memoria.
 
 rm(xRF, grid.list)
@@ -73,4 +73,4 @@ grid.list <- lapply(variables, function(x) {
                 years = 1979:2008)
 })
 x = makeMultiGrid(grid.list)
-save(x, file = paste0(ruta, "/data/x.rda", collapse=""))
+save(x, file = paste0(ruta, "data/x.rda", collapse=""))
