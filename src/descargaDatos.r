@@ -8,7 +8,7 @@ library(loadeR)
 
 #Crea un directorio en el que se guardaran los datos
 
-ruta = "/home/jovyan/TFM/"
+ruta = "/home/jovyan/TFM/TFM"
 if(!di.exists(paste0(ruta, "data", collapse = ""))){
   dir.create(paste0(ruta, "data", collapse = ""))
 }
@@ -50,7 +50,8 @@ grid.list <- lapply(variables, function(x) {
 })
 xRF = makeMultiGrid(grid.list)
 save(xRF, file = paste0(ruta, "data/xRF.rda", collapse = ""))
-Antes de seguir liberamos un poco de memoria.
+
+#Antes de seguir liberamos un poco de memoria.
 
 rm(xRF, grid.list)
 
