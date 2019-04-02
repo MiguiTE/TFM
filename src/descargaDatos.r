@@ -3,13 +3,14 @@
 #Para descargar los datos necesitamos el paquete `loadeR` y transformeR del conjunto de paquetes `climate4R` del **Grupo de meteorología de Santander**.
 
 library(loadeR)
+library(transformeR)
 
 # Gestión de directorios
 
 #Crea un directorio en el que se guardaran los datos
 
 ruta = "/home/jovyan/TFM/TFM"
-if(!di.exists(paste0(ruta, "data", collapse = ""))){
+if(!dir.exists(paste0(ruta, "data", collapse = ""))){
   dir.create(paste0(ruta, "data", collapse = ""))
 }
 
