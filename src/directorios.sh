@@ -7,7 +7,7 @@ do
 
     for dir in $(ls ${tipo})
     do
-        mkdir ${tipo}/${dir}/lluvia ${tipo}/${dir}/tmax ${tipo}/${dir}/tmin
+        mkdir ${tipo}/${dir}/precip ${tipo}/${dir}/tmax ${tipo}/${dir}/tmin
         for subdir in $(ls ${tipo}/${dir})
         do
             mkdir ${tipo}/${dir}/${subdir}/GLM-KNN
