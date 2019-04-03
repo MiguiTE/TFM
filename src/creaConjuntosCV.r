@@ -1,7 +1,6 @@
 # Paquetes climate4R
 library(magrittr)
 library(loadeR)
-library(visualizeR)
 library(transformeR)
 library(downscaleR)
 
@@ -66,13 +65,13 @@ for(var in predictandos){
             if(anyNA(tmp$Data)){
                 tmp = filterNA(tmp)
             }
-            getTemporalIntersection(xValue[[i]], tmp, which.retun = "prd")
+            getTemporalIntersection(xValue[[i]], tmp, which.return = "prd")
         })
 
         xValue = lapply(1:n_regions, function(i){
-            getTemporalIntersection(xValue[[i]], tmp, which.retun = "obs")
+            getTemporalIntersection(xValue[[i]], yValueReg[[i]], which.return = "obs")
         })
-        yValueOcc =lapply(yValueReg, function(y), binaryGrid(y, condition = "GT", threshold = 1))
+        yValueOcc =lapply(yValueReg, function(y) binaryGrid(y, condition = "GT", threshold = 1))
 
         dataOccCV = lapply(1:n_regions, function(i) dataSplit(xValue[[i]], yValueOcc[[i]], foldsAnios, type="chronological"))
         dataRegCV = lapply(1:n_regions, function(i) dataSplit(xValue[[i]], yValueReg[[i]], foldsAnios, type="chronological"))
@@ -105,13 +104,13 @@ for(var in predictandos){
             if(anyNA(tmp$Data)){
                 tmp = filterNA(tmp)
             }
-            getTemporalIntersection(xValue[[i]], tmp, which.retun = "prd")
+            getTemporalIntersection(xValue[[i]], tmp, which.return = "prd")
         })
 
         xValue = lapply(1:n_regions, function(i){
-            getTemporalIntersection(xValue[[i]], tmp, which.retun = "obs")
+            getTemporalIntersection(xValue[[i]], yValueReg[[i]], which.return = "obs")
         })
-        yValueOcc =lapply(yValueReg, function(y), binaryGrid(y, condition = "GT", threshold = 1))
+        yValueOcc =lapply(yValueReg, function(y) binaryGrid(y, condition = "GT", threshold = 1))
 
         dataOccCV = lapply(1:n_regions, function(i) dataSplit(xValue[[i]], yValueOcc[[i]], foldsAnios, type="chronological"))
         dataRegCV = lapply(1:n_regions, function(i) dataSplit(xValue[[i]], yValueReg[[i]], foldsAnios, type="chronological"))
