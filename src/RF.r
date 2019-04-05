@@ -76,7 +76,7 @@ for(estacion in estaciones){
             #Liberar un poco de memoria
             rm(dfTestOcc, dfTestReg, prediccionOcc, prediccionReg, prediccionesOcc, prediccionesReg)
         }
-        save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/RF/RF.rda", collapse = ""))
-        save(yOccPredRF, yOccRealRF, yRegPredRF, yRegRealRF, file = paste0(ruta, "data/resultados/", estacion, "/precip/RF/RF.rda", collapse = ""))
     }
+    save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/RF/RF.rda", collapse = ""))
+    save(yOccPredRF, yOccRealRF, yRegPredRF, yRegRealRF, file = paste0(ruta, "data/resultados/", estacion, "/precip/RF/RF.rda", collapse = ""))
 }
