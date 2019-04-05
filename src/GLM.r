@@ -58,6 +58,6 @@ for(estacion in estaciones){
             yRegPredGLM[[region]] = rbind(yRegPredGLM[[region]], tmpReg[["Data"]])
         }
         save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/GLM-KNN/GLM.rda", collapse = ""))
-        save(yOccPredGLM, yOccRealGLM, yRegPredGLM, yRegRealGLM, file = paste0(ruta, "data/modelos/", estacion, "/precip/GLM-KNN/GLM.rda", collapse = ""))
+        save(yOccPredGLM, yOccRealGLM, yRegPredGLM, yRegRealGLM, file = paste0(ruta, "data/resultados/", estacion, "/precip/GLM-KNN/GLM.rda", collapse = ""))
     }
 }

@@ -42,6 +42,6 @@ for(estacion in estaciones){
             yRegPredGLM[[region]] = rbind(yRegPredGLM[[region]], downscale.predict(testReg, modelos[[region]][[fold]][["Reg"]])[["Data"]])
         }
         save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/GLM-KNN/KNN.rda", collapse = ""))
-        save(yRegPredGLM, yRegRealGLM, file = paste0(ruta, "data/modelos/", estacion, "/precip/GLM-KNN/KNN.rda", collapse = ""))
+        save(yRegPredGLM, yRegRealGLM, file = paste0(ruta, "data/resultados/", estacion, "/precip/GLM-KNN/KNN.rda", collapse = ""))
     }
 }
