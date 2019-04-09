@@ -10,9 +10,9 @@ library(randomForest)
 ruta = "/home/jovyan/TFM/TFM/"
 
 #No cambiar nada
-estaciones = c("primavera", "verano", "otoño", "invierno")
+estaciones = c("verano", "otoño", "invierno")
 for(estacion in estaciones){
-    print(paste("Estacion:", estacion))
+    #print(paste("Estacion:", estacion))
     load(paste0(ruta, "data/datosEstaciones/",estacion, "/precip/RF/datos.rda", collapse = ""))
     n_regions = length(dataOccCV)
     modelos = list()
@@ -21,12 +21,12 @@ for(estacion in estaciones){
     yRegPredRF = list()
     yRegRealRF = list()
     for(region in 1:n_regions){
-        print(paste("Region:", region))
+        print(paste("Estacion:", estacion, "Region:", region))
         modelos[[region]] = list()
-        yOccPredRF[[region]] = list()
-        yOccRealRF[[region]] = list()
-        yRegPredRF[[region]] = list()
-        yRegRealRF[[region]] = list()
+        prediccionFoldOcc = c()
+        prediccionFoldReg = c()
+        realFoldOcc = c()
+        realFoldReg = c()
         for(fold in names(dataOccCV[[region]])){
             print(paste("Fold:", fold))
             #Fase preparar datos train
@@ -36,10 +36,10 @@ for(estacion in estaciones){
 
             #Fase preparar datos test
             testOcc = prepareNewData(dataOccCV[[region]][[fold]][["test"]][["x"]], trainOcc)
-            yOccRealRF[[region]] = rbind(yOccRealRF[[region]], dataOccCV[[region]][[fold]][["test"]][["y"]])
+            realFoldOcc = rbind(realFoldOcc, dataOccCV[[region]][[fold]][["test"]][["y"]][["Data"]])
 
             testReg = prepareNewData(dataRegCV[[region]][[fold]][["test"]][["x"]], trainReg)
-            yRegRealRF[[region]] = rbind(yRegRealRF[[region]], dataRegCV[[region]][[fold]][["test"]][["y"]])
+            realFoldReg = rbind(realFoldReg, dataRegCV[[region]][[fold]][["test"]][["y"]][["Data"]])
 
             #Fase entrenamiento modelos
             modelos[[region]][[fold]] = list()
@@ -62,20 +62,24 @@ for(estacion in estaciones){
             #Predecir
             prediccionesOcc = c()
             prediccionesReg = c()
+            dfTestOcc = data.frame(testOcc[["x.global"]][["member_1"]])
+            dfTestReg = data.frame(testReg[["x.global"]][["member_1"]])
             for(k in 1:numeroEstaciones){
-                dfTestOcc = data.frame(testOcc[["x.global"]][["member_1"]])
                 prediccionOcc = as.numeric(predict(modelos[[region]][[fold]][["Occ"]][[k]], dfTestOcc, type = "prob")[,2] > 0.5)
                 prediccionesOcc = cbind(prediccionesOcc, prediccionOcc)
-                dfTestReg = data.frame(testReg[["x.global"]][["member_1"]])
                 prediccionReg = predict(modelos[[region]][[fold]][["Reg"]][[k]], dfTestReg)
-                prediccionesReg = cbind(prediccionReg, prediccionOcc * prediccionReg)
+                prediccionesReg = cbind(prediccionesReg, prediccionReg)
             }
-            yOccPredRF[[region]] = rbind(yOccPredRF[[region]], prediccionesOcc)
-            yRegPredRF[[region]] = rbind(yRegPredRF[[region]], prediccionesReg)
+            prediccionFoldOcc = rbind(prediccionFoldOcc, prediccionesOcc)
+            prediccionFoldReg = rbind(prediccionFoldReg, prediccionesOcc * prediccionesReg)
 
             #Liberar un poco de memoria
             rm(dfTestOcc, dfTestReg, prediccionOcc, prediccionReg, prediccionesOcc, prediccionesReg)
         }
+        yOccPredRF[[region]] = prediccionFoldOcc
+        yOccRealRF[[region]] = realFoldOcc
+        yRegPredRF[[region]] = prediccionFoldReg
+        yRegRealRF[[region]] = realFoldReg
     }
     save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/RF/RF.rda", collapse = ""))
     save(yOccPredRF, yOccRealRF, yRegPredRF, yRegRealRF, file = paste0(ruta, "data/resultados/", estacion, "/precip/RF/RF.rda", collapse = ""))

@@ -1,5 +1,4 @@
 # Paquetes climate4R
-
 library(loadeR)
 library(transformeR)
 library(downscaleR)
@@ -16,13 +15,13 @@ for(estacion in estaciones){
     load(paste0(ruta, "data/datosEstaciones/",estacion, "/precip/GLM-KNN/datos.rda", collapse = ""))
     n_regions = length(dataRegCV)
     modelos = list()
-    yRegPredGLM = list()
-    yRegRealGLM = list()
+    yRegPredKNN = list()
+    yRegRealKNN = list()
     for(region in 1:n_regions){
         print(paste("Region:", region))
         modelos[[region]] = list()
-        yRegPredGLM[[region]] = list()
-        yRegRealGLM[[region]] = list()
+        realidadReg = c()
+        prediccionReg = c()
         for(fold in names(dataRegCV[[region]])){
             print(paste("Fold:", fold))
             #Fase preparar datos train
@@ -31,7 +30,7 @@ for(estacion in estaciones){
 
             #Fase preparar datos test
             testReg = prepareNewData(dataRegCV[[region]][[fold]][["test"]][["x"]], trainReg)
-            yRegRealGLM[[region]] = rbind(yRegRealGLM[[region]], dataRegCV[[region]][[fold]][["test"]][["y"]])
+            realidadReg = rbind(realidadReg, dataRegCV[[region]][[fold]][["test"]][["y"]][["Data"]])
 
             #Fase entrenamiento modelos
             modelos[[region]][[fold]] = list()
@@ -39,9 +38,11 @@ for(estacion in estaciones){
             modelos[[region]][[fold]][["Reg"]] = downscale.train(trainReg, method = "analogs", n.analogs=1, condition = "GE", threshold = 0)
 
             #Predecir
-            yRegPredGLM[[region]] = rbind(yRegPredGLM[[region]], downscale.predict(testReg, modelos[[region]][[fold]][["Reg"]])[["Data"]])
+            prediccionReg = rbind(prediccionReg, downscale.predict(testReg, modelos[[region]][[fold]][["Reg"]])[["Data"]])
         }
-        save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/GLM-KNN/KNN.rda", collapse = ""))
-        save(yRegPredGLM, yRegRealGLM, file = paste0(ruta, "data/resultados/", estacion, "/precip/GLM-KNN/KNN.rda", collapse = ""))
+        yRegPredKNN[[region]] = prediccionReg
+        yRegRealKNN[[region]] = realidadReg
     }
+    save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/GLM-KNN/KNN.rda", collapse = ""))
+    save(yRegPredKNN, yRegRealKNN, file = paste0(ruta, "data/resultados/", estacion, "/precip/GLM-KNN/KNN.rda", collapse = ""))
 }

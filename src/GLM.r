@@ -1,5 +1,4 @@
 # Paquetes climate4R
-
 library(loadeR)
 library(transformeR)
 library(downscaleR)
@@ -23,10 +22,10 @@ for(estacion in estaciones){
     for(region in 1:n_regions){
         print(paste("Region:", region))
         modelos[[region]] = list()
-        yOccPredGLM[[region]] = list()
-        yOccRealGLM[[region]] = list()
-        yRegPredGLM[[region]] = list()
-        yRegRealGLM[[region]] = list()
+        realidadOcc = c()
+        realidadReg = c()
+        prediccionOcc = c()
+        prediccionReg = c()
         for(fold in names(dataOccCV[[region]])){
             print(paste("Fold:", fold))
             #Fase preparar datos train
@@ -38,10 +37,10 @@ for(estacion in estaciones){
 
             #Fase preparar datos test
             testOcc = prepareNewData(dataOccCV[[region]][[fold]][["test"]][["x"]], trainOcc)
-            yOccRealGLM[[region]] = rbind(yOccRealGLM[[region]], dataOccCV[[region]][[fold]][["test"]][["y"]])
+            realidadOcc = rbind(realidadOcc, dataOccCV[[region]][[fold]][["test"]][["y"]][["Data"]])
 
             testReg = prepareNewData(dataRegCV[[region]][[fold]][["test"]][["x"]], trainReg)
-            yRegRealGLM[[region]] = rbind(yRegRealGLM[[region]], dataRegCV[[region]][[fold]][["test"]][["y"]])
+            realidadReg = rbind(realidadReg, dataRegCV[[region]][[fold]][["test"]][["y"]][["Data"]])
 
             #Fase entrenamiento modelos
             modelos[[region]][[fold]] = list()
@@ -49,15 +48,19 @@ for(estacion in estaciones){
             modelos[[region]][[fold]][["Reg"]] = downscale.train(trainReg, method = "GLM", family = Gamma(link = "log"), condition = "GT", threshold = 1)
 
             #Predecir
-            prediccionOcc = downscale.predict(testOcc, modelos[[region]][[fold]][["Occ"]])
-            tmpOcc = binaryGrid(prediccionOcc, condition = "GT", threshold = 0.5)
-            yOccPredGLM[[region]] = rbind(yOccPredGLM[[region]], tmpOcc[["Data"]])
+            prediccionesOcc = downscale.predict(testOcc, modelos[[region]][[fold]][["Occ"]])
+            tmpOcc = binaryGrid(prediccionesOcc, condition = "GT", threshold = 0.5)
+            prediccionOcc = rbind(prediccionOcc, tmpOcc[["Data"]])
 
-            prediccionReg = downscale.predict(testReg, modelos[[region]][[fold]][["Reg"]])
-            tmpReg = gridArithmetics(tmpOcc, prediccionReg, operator = "*")
-            yRegPredGLM[[region]] = rbind(yRegPredGLM[[region]], tmpReg[["Data"]])
+            prediccionesReg = downscale.predict(testReg, modelos[[region]][[fold]][["Reg"]])
+            tmpReg = gridArithmetics(tmpOcc, prediccionesReg, operator = "*")
+            prediccionReg = rbind(prediccionReg, tmpReg[["Data"]])
         }
-        save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/GLM-KNN/GLM.rda", collapse = ""))
-        save(yOccPredGLM, yOccRealGLM, yRegPredGLM, yRegRealGLM, file = paste0(ruta, "data/resultados/", estacion, "/precip/GLM-KNN/GLM.rda", collapse = ""))
+        yOccPredGLM[[region]] = prediccionOcc
+        yOccRealGLM[[region]] = realidadOcc
+        yRegPredGLM[[region]] = prediccionReg
+        yRegRealGLM[[region]] = realidadReg
     }
+    save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/GLM-KNN/GLM.rda", collapse = ""))
+    save(yOccPredGLM, yOccRealGLM, yRegPredGLM, yRegRealGLM, file = paste0(ruta, "data/resultados/", estacion, "/precip/GLM-KNN/GLM.rda", collapse = ""))
 }

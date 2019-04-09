@@ -21,25 +21,11 @@ foldsAnios = lapply(1:(length(anios)-1), function(z){
 nFolds = length(foldsAnios)
 
 #Crear las estaciones
-meses = lapply(1:12, function(i){
-  (i %% 12 + 3) %/% 3
-})
-estaciones = list("primavera" = c(), "verano" = c(), "otoño" = c(), "invierno" = c())
-for (i in 1:12) {
-  if (meses[[i]] == 1){
-    estaciones[["invierno"]] = c(estaciones[["invierno"]], i)
-  }
-  if (meses[[i]] == 2){
-    estaciones[["primavera"]] = c(estaciones[["primavera"]], i)
-  }
-  if (meses[[i]] == 3){
-    estaciones[["verano"]] = c(estaciones[["verano"]], i)
-  }
-  if (meses[[i]] == 4){
-    estaciones[["otoño"]] = c(estaciones[["otoño"]], i)
-  }
-}
-rm(meses)
+estaciones = list()
+estaciones[["primavera"]] = c(3, 4, 5)
+estaciones[["invierno"]] = c(12, 1, 2)
+estaciones[["verano"]] = c(6, 7, 8)
+estaciones[["otoño"]] = c(9, 10, 11)
 
 
 
