@@ -25,7 +25,7 @@ modelos = c("KNN", "GLM", paste("NNRF", seq(2,21, 2), sep = ""))
 estaciones = c("primavera", "verano", "otoño", "invierno")
 
 
-jpeg("imagenes/Spearman.jpg", width = 1700, height = 1080)
+pdf("imagenes/Spearman.pdf")
 par(mfrow=c(2,2))
 for(estacion in estaciones){
   tmp = lapply(modelos, function(modelo){
@@ -63,7 +63,7 @@ for(modelo in modelos){
 }
 
 ######################################################################################3
-jpeg("imagenes/R01.jpg", width = 1700, height = 1080)
+pdf("imagenes/R01.pdf")
 par(mfrow=c(2,2))
 for(estacion in estaciones){
   tmp = lapply(modelos, function(modelo){
@@ -101,7 +101,7 @@ for(modelo in modelos){
 
 
 ######################################################################################3
-jpeg("imagenes/SDII.jpg", width = 1700, height = 1080)
+pdf("imagenes/SDII.pdf")
 par(mfrow=c(2,2))
 for(estacion in estaciones){
   tmp = lapply(modelos, function(modelo){
