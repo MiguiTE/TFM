@@ -10,6 +10,7 @@ library(randomForest)
 ruta = "/home/jovyan/TFM/TFM/"
 
 #No cambiar nada
+codigos = matrix(c(sprintf("%06i", 272), sprintf("%06i", 350), sprintf("%06i", 3946), sprintf("%06i", 232), sprintf("%06i", 355), sprintf("%06i", 32), sprintf("%06i", 3991), sprintf("%06i", 2006), sprintf("%06i", 708), sprintf("%06i", 191), sprintf("%06i", 4002), sprintf("%06i", 58), sprintf("%06i", 1686), sprintf("%06i", 62), sprintf("%06i", 450), sprintf("%06i", 333)), nrow=2, ncol=8)
 estaciones = c("primavera", "verano", "otoño", "invierno")
 for(estacion in estaciones){
     #print(paste("Estacion:", estacion))
@@ -27,8 +28,13 @@ for(estacion in estaciones){
         prediccionFoldReg = c()
         realFoldOcc = c()
         realFoldReg = c()
+        start = Sys.time()
         for(fold in names(dataOccCV[[region]])){
             print(paste("Fold:", fold))
+            dataOccCV[[region]][[fold]][["train"]][["y"]] = subsetStation(dataOccCV[[region]][[fold]][["train"]][["y"]], station.id = codigos[,region])
+            dataOccCV[[region]][[fold]][["test"]][["y"]] = subsetStation(dataOccCV[[region]][[fold]][["test"]][["y"]], station.id = codigos[,region])
+            dataRegCV[[region]][[fold]][["train"]][["y"]] = subsetStation(dataRegCV[[region]][[fold]][["train"]][["y"]], station.id = codigos[,region])
+            dataRegCV[[region]][[fold]][["test"]][["y"]] = subsetStation(dataRegCV[[region]][[fold]][["test"]][["y"]], station.id = codigos[,region])
             #Fase preparar datos train
             trainOcc = prepareData(dataOccCV[[region]][[fold]][["train"]][["x"]], dataOccCV[[region]][[fold]][["train"]][["y"]])
 
@@ -81,6 +87,7 @@ for(estacion in estaciones){
         yRegPredRF[[region]] = prediccionFoldReg
         yRegRealRF[[region]] = realFoldReg
     }
+    timeElapsed = Sys.time() - start
     save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/RF/RF.rda", collapse = ""))
-    save(yOccPredRF, yOccRealRF, yRegPredRF, yRegRealRF, file = paste0(ruta, "data/resultados/", estacion, "/precip/RF/RF.rda", collapse = ""))
+    save(yOccPredRF, yOccRealRF, yRegPredRF, yRegRealRF, timeElapsed, file = paste0(ruta, "data/resultados/", estacion, "/precip/RF/RF.rda", collapse = ""))
 }

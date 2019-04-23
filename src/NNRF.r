@@ -22,6 +22,7 @@ for(estacion in estaciones){
         yOccRealNNRF = list()
         yRegPredNNRF = list()
         yRegRealNNRF = list()
+        start = Sys.time()
         for(region in 1:n_regions){
             #print(paste("Region:", region))
             modelos[[region]] = list()
@@ -33,10 +34,12 @@ for(estacion in estaciones){
                 print(paste("Estacion:",estacion, "Nº vecinos:", n_vecinos, "Region:", region, "Subconjunto:", fold))
                 
                 if(n_vecinos == 2){
+                    startV = Sys.time()
                     dataOccCV[[region]][[fold]][["train"]][["y"]] = subsetStation(dataOccCV[[region]][[fold]][["train"]][["y"]], station.id = codigos[,region])
                     dataOccCV[[region]][[fold]][["test"]][["y"]] = subsetStation(dataOccCV[[region]][[fold]][["test"]][["y"]], station.id = codigos[,region])
                     dataRegCV[[region]][[fold]][["train"]][["y"]] = subsetStation(dataRegCV[[region]][[fold]][["train"]][["y"]], station.id = codigos[,region])
                     dataRegCV[[region]][[fold]][["test"]][["y"]] = subsetStation(dataRegCV[[region]][[fold]][["test"]][["y"]], station.id = codigos[,region])
+                    timeElapsedV = Sys.time() - startV
                 }
                 
                 trainOcc = prepareData(dataOccCV[[region]][[fold]][["train"]][["x"]], dataOccCV[[region]][[fold]][["train"]][["y"]], local.predictors = list("n" = n_vecinos, vars = getVarNames(dataOccCV[[region]][[fold]][["train"]][["x"]])))
@@ -80,7 +83,8 @@ for(estacion in estaciones){
             yRegPredNNRF[[region]] = prediccionFoldReg
             yRegRealNNRF[[region]] = realFoldReg
         }
+        timeElapsed = Sys.time() - start + timeElapsedV
         save(modelos, file = paste0(ruta,"data/modelos/",estacion,"/precip/NNRF/NNRF",n_vecinos,".rda", collapse = ""))
-        save(yOccPredNNRF, yOccRealNNRF, yRegPredNNRF, yRegRealNNRF, file = paste0(ruta,"data/resultados/",estacion,"/precip/NNRF/NNRF",n_vecinos,".rda", collapse = ""))
+        save(yOccPredNNRF, yOccRealNNRF, yRegPredNNRF, yRegRealNNRF, timeElapsed, file = paste0(ruta,"data/resultados/",estacion,"/precip/NNRF/NNRF",n_vecinos,".rda", collapse = ""))
     }
 }
