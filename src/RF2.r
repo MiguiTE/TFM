@@ -88,6 +88,6 @@ for(estacion in estaciones){
         yRegRealRF[[region]] = realFoldReg
     }
     timeElapsed = Sys.time() - start
-    save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/RF/RF.rda", collapse = ""))
-    save(yOccPredRF, yOccRealRF, yRegPredRF, yRegRealRF, timeElapsed, file = paste0(ruta, "data/resultados/", estacion, "/precip/RF/RF.rda", collapse = ""))
+    save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/RF/RF2.rda", collapse = ""))
+    save(yOccPredRF, yOccRealRF, yRegPredRF, yRegRealRF, timeElapsed, file = paste0(ruta, "data/resultados/", estacion, "/precip/RF/RF2.rda", collapse = ""))
 }
