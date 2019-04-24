@@ -1,3 +1,4 @@
+mkdir imagenes
 mkdir data
 cd data
 mkdir datosEstaciones modelos resultados
