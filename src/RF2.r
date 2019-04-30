@@ -21,6 +21,7 @@ for(estacion in estaciones){
     yOccRealRF = list()
     yRegPredRF = list()
     yRegRealRF = list()
+    start = Sys.time()
     for(region in 1:n_regions){
         print(paste("Estacion:", estacion, "Region:", region))
         modelos[[region]] = list()
@@ -28,7 +29,6 @@ for(estacion in estaciones){
         prediccionFoldReg = c()
         realFoldOcc = c()
         realFoldReg = c()
-        start = Sys.time()
         for(fold in names(dataOccCV[[region]])){
             print(paste("Fold:", fold))
             dataOccCV[[region]][[fold]][["train"]][["y"]] = subsetStation(dataOccCV[[region]][[fold]][["train"]][["y"]], station.id = codigos[,region])
