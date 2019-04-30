@@ -1,6 +1,5 @@
 library(magrittr)
 library(loadeR)
-library(visualizeR)
 library(transformeR)
 library(downscaleR)
 
@@ -36,7 +35,7 @@ for (i in 1:length(ordRegion)) {
   tmp[ordRegion[i]] = tmp[ordRegion[i]] + 1
 }
 ordenLatNombres = todas[["Metadata"]][["name"]][orden]
-save(ordenLat, ordenLatNombres, file=paste0(ruta, "data/orden.zip", collapse = ""))
+save(ordenLat, ordenLatNombres, file=paste0(ruta, "data/orden.rda", collapse = ""))
 
 
 
