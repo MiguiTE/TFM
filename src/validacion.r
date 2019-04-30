@@ -4,10 +4,24 @@ regiones = c("Bretaña", "Iberia", "Francia", "Europa Central", "Escandinavia", 
 n_regions = length(regiones)
 
 loadGLM = function(estacion){
+  load(paste0("data/resultados/",estacion,"/precip/GLM-KNN/GLM.rda", collapse=""), envir = .GlobalEnv)
+}
+
+loadGLM2 = function(estacion){
   load(paste0("data/resultados/",estacion,"/precip/GLM-KNN/GLM2.rda", collapse=""), envir = .GlobalEnv)
 }
 
 loadKNN = function(estacion){
+  load(paste0("data/resultados/",estacion,"/precip/GLM-KNN/KNN.rda", collapse=""), envir = .GlobalEnv)
+  yOccPredKNN <<- lapply(yRegPredKNN, function(region){
+    matrix(as.numeric(region > 1), nrow = dim(region)[1], ncol = dim(region)[2])
+  })
+  yOccRealKNN <<- lapply(yRegRealKNN, function(region){
+    matrix(as.numeric(region > 1), nrow = dim(region)[1], ncol = dim(region)[2])
+  })
+}
+
+loadKNN2 = function(estacion){
   load(paste0("data/resultados/",estacion,"/precip/GLM-KNN/KNN2.rda", collapse=""), envir = .GlobalEnv)
   yOccPredKNN <<- lapply(yRegPredKNN, function(region){
     matrix(as.numeric(region > 1), nrow = dim(region)[1], ncol = dim(region)[2])
@@ -17,11 +31,19 @@ loadKNN = function(estacion){
   })
 }
 
+loadRF = function(estacion){
+  load(paste0("data/resultados/",estacion,"/precip/RF/RF.rda", collapse=""), envir = .GlobalEnv)
+}
+
+loadRF2 = function(estacion){
+  load(paste0("data/resultados/",estacion,"/precip/RF/RF2.rda", collapse=""), envir = .GlobalEnv)
+}
+
 loadNNRF = function(estacion,modelo){
   load(paste0("data/resultados/",estacion,"/precip/NNRF/", modelo, ".rda", collapse=""), envir = .GlobalEnv)
 }
 
-modelos = c("KNN", "GLM", paste("NNRF", seq(2,21, 2), sep = ""))
+modelos = c("KNN", "GLM", "RF", paste("NNRF", seq(2,21, 2), sep = ""))
 estaciones = c("primavera", "verano", "otoño", "invierno")
 
 #pdf("imagenes/Spearman.pdf")
@@ -30,11 +52,11 @@ for(estacion in estaciones){
   pdf(paste0("imagenes/Spearman", estacion, ".pdf", collapse = ""))
   tmp = lapply(modelos, function(modelo){
     if (modelo == "GLM"){
-      loadGLM(estacion)
+      loadGLM2(estacion)
     }else if (modelo == "KNN"){
-      loadKNN(estacion)
+      loadKNN2(estacion)
     }else if (modelo == "RF"){
-      
+      loadRF2(estacion)
     }else{
       loadNNRF(estacion, modelo)
     }
@@ -50,8 +72,9 @@ for(estacion in estaciones){
   })
   df = melt(tmp)
   tiempos = df[is.na(df$L3),]$value
+  tiempos[1:3] = tiempos[1:3] * 60
   df = df[!is.na(df$L3),]
-  boxplot(value ~ L1, data = df, pos = 1:12, ylim = c(0,1), names = modelos, main=paste("Correlación Spearman", estacion))
+  boxplot(value ~ L1, data = df, pos = 1:13, ylim = c(0,1), main=paste("Correlación Spearman", estacion), at = seq(1, 13, by = 1), names = modelos, las = 2)
   abline(h=0, col = "grey", lty=3, lwd=2)
   abline(h=1, col = "grey", lty=3, lwd=2)
   for(j in 1:length(tmp)){
@@ -60,7 +83,7 @@ for(estacion in estaciones){
     }
   }
   par(new = TRUE)
-  plot(seq(1.45,11.05, length.out = 12), tiempos, type = "l", col="lightgrey", axes = FALSE, bty = "n", xlab = "", ylab = "")
+  plot(seq(1.45,11.05, length.out = 13), tiempos, type = "l", col="lightgrey", axes = FALSE, bty = "n", xlab = "", ylab = "")
   dev.off()
 }
 #dev.off()
@@ -76,11 +99,11 @@ for(estacion in estaciones){
   pdf(paste0("imagenes/R01", estacion, ".pdf", collapse = ""))
   tmp = lapply(modelos, function(modelo){
     if (modelo == "GLM"){
-      loadGLM(estacion)
+      loadGLM2(estacion)
     }else if (modelo == "KNN"){
-      loadKNN(estacion)
+      loadKNN2(estacion)
     }else if (modelo == "RF"){
-      
+      loadRF2(estacion)
     }else{
       loadNNRF(estacion, modelo)
     }
@@ -96,8 +119,9 @@ for(estacion in estaciones){
   })
   df = melt(tmp)
   tiempos = df[is.na(df$L3),]$value
+  tiempos[1:3] = tiempos[1:3] * 60
   df = df[!is.na(df$L3),]
-  boxplot(value ~ L1, data = df,ylim = c(0.4,1.2), names = modelos, main=paste("R01", estacion))
+  boxplot(value ~ L1, data = df,ylim = c(0.4,1.2), main=paste("R01", estacion), at = seq(1, 13, by = 1), names = modelos, las = 2)
   abline(h=1, col = "grey", lty=3, lwd=2)
   for(j in 1:length(tmp)){
     for(i in 1:n_regions){
@@ -122,11 +146,11 @@ for(estacion in estaciones){
   pdf(paste0("imagenes/SDII", estacion, ".pdf", collapse = ""))
   tmp = lapply(modelos, function(modelo){
     if (modelo == "GLM"){
-      loadGLM(estacion)
+      loadGLM2(estacion)
     }else if (modelo == "KNN"){
-      loadKNN(estacion)
+      loadKNN2(estacion)
     }else if (modelo == "RF"){
-      
+      loadRF2(estacion)
     }else{
       loadNNRF(estacion, modelo)
     }
@@ -142,8 +166,9 @@ for(estacion in estaciones){
   })
   df = melt(tmp)
   tiempos = df[is.na(df$L3),]$value
+  tiempos[1:3] = tiempos[1:3] * 60
   df = df[!is.na(df$L3),]
-  boxplot(value ~ L1, data = df,ylim = c(0.8,1.6), names = modelos, main=paste("SDII", estacion))
+  boxplot(value ~ L1, data = df,ylim = c(0.8,1.6), main=paste("SDII", estacion), at = seq(1, 13, by = 1), names = modelos, las = 2)
   abline(h=1, col = "grey", lty=3, lwd=2)
   for(j in 1:length(tmp)){
     for(i in 1:n_regions){
@@ -151,7 +176,7 @@ for(estacion in estaciones){
     }
   }
   par(new = TRUE)
-  plot(seq(4,10, length.out = 12), tiempos, type = "l", col="lightgrey", axes = FALSE, bty = "n", xlab = "", ylab = "")
+  plot(seq(4,10, length.out = 13), tiempos, type = "l", col="lightgrey", axes = FALSE, bty = "n", xlab = "", ylab = "")
   dev.off()
 }
 #dev.off()
