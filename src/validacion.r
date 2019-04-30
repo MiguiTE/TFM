@@ -87,6 +87,40 @@ for(estacion in estaciones){
   dev.off()
 }
 #dev.off()
+
+modelos2 = c("GLM", "RF", "KNN")
+pdf("imagenes/SpearmanOrd.pdf")
+par(mfrow=c(2,2))
+for(estacion in estaciones){
+  #pdf(paste0("imagenes/SpearmanOrd", estacion, ".pdf", collapse = ""))
+  load("data/orden.rda")
+  tmp = lapply(modelos2, function(modelo){
+    if (modelo == "GLM"){
+      loadGLM(estacion)
+    }else if (modelo == "KNN"){
+      loadKNN(estacion)
+    }else if (modelo == "RF"){
+      loadRF(estacion)
+    }else{
+      
+    }
+    do.call("<-",list("yRegPred", eval(parse(text = paste0("yRegPred",substr(modelo, 1, 4))))))
+    do.call("<-",list("yRegReal", eval(parse(text = paste0("yRegReal",substr(modelo, 1, 4))))))
+    tmp2 = lapply(1:length(yRegPred), function(i){
+      pred = yRegPred[[i]]
+      real = yRegReal[[i]]
+      lapply(1:dim(pred)[2], function(j) cor(pred[,j],real[,j], method = "spearman"))
+    })
+  })
+  plot(1, type="n", xlab="Estacion", ylab="Correlacion", xlim=c(1,86), ylim=c(0, 1), main=paste("Correlación Spearman", estacion))
+  for(i in 1:length(modelos2)){
+    cors = apply(ordenLat, MARGIN = 1, function(pos) tmp[[i]][[pos[1]]][[pos[2]]])
+    lines(cors, col = i)
+  }
+  legend("topright", col = 1:3, lty = 1, legend = modelos2)
+  #dev.off()
+}
+dev.off()
 for(modelo in modelos){
   rm(list = c(paste0("yRegPred",substr(modelo, 1, 4)), paste0("yRegReal",substr(modelo, 1, 4)), 
               paste0("yOccPred",substr(modelo, 1, 4)), paste0("yOccReal",substr(modelo, 1, 4))))
