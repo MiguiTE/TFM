@@ -43,13 +43,14 @@ loadNNRF = function(estacion,modelo){
   load(paste0("data/resultados/",estacion,"/precip/NNRF/", modelo, ".rda", collapse=""), envir = .GlobalEnv)
 }
 
-modelos = c("KNN", "GLM", "RF", paste("NNRF", seq(2,21, 2), sep = ""))
+modelos = c("KNN", "GLM", paste("NNRF", seq(2,21, 2), sep = ""), "RF")
 estaciones = c("primavera", "verano", "otoño", "invierno")
 
 #pdf("imagenes/Spearman.pdf")
-#par(mfrow=c(2,2))
+par(mfrow=c(2,2))
+par(mfrow=c(2,2), mar=c(5, 4, 4, 3))
 for(estacion in estaciones){
-  pdf(paste0("imagenes/Spearman", estacion, ".pdf", collapse = ""))
+  #pdf(paste0("imagenes/Spearman", estacion, ".pdf", collapse = ""))
   tmp = lapply(modelos, function(modelo){
     if (modelo == "GLM"){
       loadGLM2(estacion)
@@ -72,9 +73,13 @@ for(estacion in estaciones){
   })
   df = melt(tmp)
   tiempos = df[is.na(df$L3),]$value
-  tiempos[1:3] = tiempos[1:3] * 60
+  #todos a segundos
+  tiempos[1:2] = tiempos[1:2] * 60
+  tiempos[length(tiempos)] = tiempos[length(tiempos)] * 60
+  #todos a minutos
+  tiempos = tiempos / 60
   df = df[!is.na(df$L3),]
-  boxplot(value ~ L1, data = df, pos = 1:13, ylim = c(0,1), main=paste("Correlación Spearman", estacion), at = seq(1, 13, by = 1), names = modelos, las = 2)
+  boxplot(value ~ L1, data = df, pos = 1:13, ylim = c(0,1), main=paste("Correlación Spearman", estacion), at = seq(1, 13, by = 1), names = modelos, las = 2, ylab = "Correlacion")
   abline(h=0, col = "grey", lty=3, lwd=2)
   abline(h=1, col = "grey", lty=3, lwd=2)
   for(j in 1:length(tmp)){
@@ -83,8 +88,10 @@ for(estacion in estaciones){
     }
   }
   par(new = TRUE)
-  plot(seq(1.45,11.05, length.out = 13), tiempos, type = "l", col="lightgrey", axes = FALSE, bty = "n", xlab = "", ylab = "")
-  dev.off()
+  plot(seq(0.55,13.5, length.out = 13), tiempos, type = "l", col="lightgrey", axes = FALSE, bty = "n", xlab = "", ylab = "", xlim = c(0,14))
+  axis(4)
+  mtext("Tiempo", side=4, line = 1.75, cex = 0.8)
+  #dev.off()
 }
 #dev.off()
 
