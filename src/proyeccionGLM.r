@@ -37,7 +37,8 @@ patrones[["P3"]] = c("psl", "ta@85000", "hus@85000")
 patrones[["P4"]] = c("psl", "ta@85000", "ua@25000","hus@85000")
 patrones[["P5"]] = c("psl", "hur@85000")
 patrones[["P6"]] = c("psl", "hur@85000", "ua@25000")
-opcionPatrones = c("P2", "P5")
+patrones[["P7"]] = c("psl", "ta@85000", "ua@25000","hus@85000", "hur@85000")
+opcionPatrones = c("P7")
 
 for (patron in opcionPatrones){
   for(gcm in gcms){

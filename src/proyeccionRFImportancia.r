@@ -39,9 +39,9 @@ patrones[["P4"]] = c("psl", "ta@85000", "ua@25000","hus@85000")
 patrones[["P5"]] = c("psl", "hur@85000")
 patrones[["P6"]] = c("psl", "hur@85000", "ua@25000")
 patrones[["P7"]] = c("psl", "ta@85000", "ua@25000","hus@85000", "hur@85000")
-opcionPatrones = c("P2", "P5", "P7")
+opcionPatrones = c("P7")
 
-nvecinos = c(1, 16, 25)
+nvecinos = c(1, 25)
 
 for (n in nvecinos){
     for (patron in opcionPatrones){
@@ -83,7 +83,7 @@ for (n in nvecinos){
         for(k in 1:numeroEstaciones){
             dfTrainOcc = data.frame("x"=trainOcc[["x.local"]][[k]][["member_1"]])
             dfTrainOcc["y"] = as.factor(trainOcc[["y"]][["Data"]][,k])
-            modelos[["Occ"]][[k]] = randomForest(y ~ ., data = dfTrainOcc, ntree = 100)
+            modelos[["Occ"]][[k]] = randomForest(y ~ ., data = dfTrainOcc, ntree = 100, importance = T)
 
             dfTest = data.frame("x" = test[["x.local"]][[k]][["member_1"]])
             prediccionOcc = cbind(prediccionOcc, as.numeric(predict(modelos[["Occ"]][[k]], dfTest, type="prob")[,2]>0.5))
@@ -91,13 +91,12 @@ for (n in nvecinos){
             dfTrainReg = data.frame("x"=trainReg[["x.local"]][[k]][["member_1"]])
             dfTrainReg["y"] = trainReg[["y"]][["Data"]][,k]
             diasLluvia = which(dfTrainReg["y"] > 1)
-            modelos[["Reg"]][[k]] = randomForest(y ~ ., data = dfTrainReg, subset = diasLluvia, ntree = 100)
+            modelos[["Reg"]][[k]] = randomForest(y ~ ., data = dfTrainReg, subset = diasLluvia, ntree = 100, importance = T)
 
             prediccionReg = cbind(prediccionReg, predict(modelos[["Reg"]][[k]], dfTest))
         }
         prediccionFinal = prediccionOcc * prediccionReg
-        save(modelos, file = paste0(ruta, "data/proyeccion/modelos/modelos", gcm, "patron", patron, "nvecions",n, "RF.rda"))
-        save(prediccionReg, prediccionOcc, prediccionFinal, file = paste0(ruta, "data/proyeccion/resultados/pred", gcm, "nvecions", n, "patron", patron, "RF.rda"))
+        save(modelos, file = paste0(ruta, "data/proyeccion/modelos/modelos", gcm, "patron", patron, "nvecions",n, "RFImp.rda"))
         rm(list = c(hist[[gcm]], rcp85[[gcm]]))
       }
     }

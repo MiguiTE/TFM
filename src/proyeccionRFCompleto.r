@@ -7,11 +7,12 @@ ruta = "/home/jovyan/TFM/TFM/"
 
 print("Carga observaciones y Reanalisis")
 obs = loadStationData(dataset = paste0(ruta, "data/DCCMS_obs.zip",collapse = ""), var = "pr")
-load(paste0(ruta, "data/proyeccionInterim.rda", collapse = ""))
-interim[["Variable"]][["varName"]] = c("hur@85000", "hus@85000", "ta@85000", "psl", "ua@25000")
-interim[["Variable"]][["level"]] = c(85000, 85000, 85000,    NA, 25000)
+load(paste0(ruta, "data/proyeccionInterimCompleto.rda", collapse = ""))
+interim[["Variable"]][["varName"]] = c("hur@25000", "hur@50000", "hur@85000", "hus@25000", "hus@50000", "hus@85000", "ta@25000", "ta@50000", "ta@85000", "ua@25000", "ua@50000", "ua@85000", "va@25000", "va@50000", "va@85000", "psl")
+interim[["Variable"]][["level"]] = c(rep(c(25000, 50000, 85000),5), NA)
 
-gcms = c("Canes", "Cnrm", "Gfdl", "Miroc", "MpiLr", "MpiMr", "Noresm")
+#gcms = c("Canes", "Cnrm", "Gfdl", "Miroc", "MpiLr", "MpiMr", "Noresm")
+gcms = c("Canes")
 
 hist = list()
 hist[["Canes"]] = "canesm2.historical"
@@ -39,16 +40,17 @@ patrones[["P4"]] = c("psl", "ta@85000", "ua@25000","hus@85000")
 patrones[["P5"]] = c("psl", "hur@85000")
 patrones[["P6"]] = c("psl", "hur@85000", "ua@25000")
 patrones[["P7"]] = c("psl", "ta@85000", "ua@25000","hus@85000", "hur@85000")
-opcionPatrones = c("P2", "P5", "P7")
+patrones[["P8"]] = c("hur@25000", "hur@50000", "hur@85000", "hus@25000", "hus@50000", "hus@85000", "ta@25000", "ta@50000", "ta@85000", "ua@25000", "ua@50000", "ua@85000", "va@25000", "va@50000", "va@85000", "psl")
+opcionPatrones = c("P2", "P5", "P8")
 
-nvecinos = c(1, 16, 25)
+nvecinos = c(1, 25)
 
 for (n in nvecinos){
     for (patron in opcionPatrones){
       for(gcm in gcms){
         #Cargar datos
         print(paste0("Patron ", patron, ", Gcm: ", gcm, collapse = ""))
-        load(paste0(ruta,"data/proyeccion",gcm,".rda", collapse = ""))
+        load(paste0(ruta,"data/proyeccion",gcm,"Completo.rda", collapse = ""))
 
         #Misma escala temporal predictores
         #historico = intersectGrid.time(get(hist[[gcm]]), interim, which.return = 1)
@@ -96,8 +98,8 @@ for (n in nvecinos){
             prediccionReg = cbind(prediccionReg, predict(modelos[["Reg"]][[k]], dfTest))
         }
         prediccionFinal = prediccionOcc * prediccionReg
-        save(modelos, file = paste0(ruta, "data/proyeccion/modelos/modelos", gcm, "patron", patron, "nvecions",n, "RF.rda"))
-        save(prediccionReg, prediccionOcc, prediccionFinal, file = paste0(ruta, "data/proyeccion/resultados/pred", gcm, "nvecions", n, "patron", patron, "RF.rda"))
+        save(modelos, file = paste0(ruta, "data/proyeccion/modelos/modelos", gcm, "patron", patron, "nvecions",n, "RFCompleto.rda"))
+        save(prediccionReg, prediccionOcc, prediccionFinal, file = paste0(ruta, "data/proyeccion/resultados/pred", gcm, "nvecions", n, "patron", patron, "RFCompleto.rda"))
         rm(list = c(hist[[gcm]], rcp85[[gcm]]))
       }
     }
