@@ -60,6 +60,7 @@ canesm2.rcp85 = makeMultiGrid(grid.list)
 
 save(canesm2.historical, canesm2.rcp85, file =paste0(ruta, "data/proyeccionCanes.rda"))
 rm(canesm2.rcp85, canesm2.historical)
+
 ## GCM(CNRM, historical)
 dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/CNRM-CERFACS/CNRM-CM5/historical/day/cnrm-cerfacs_cnrm-cm5_historical_r1i1p1.ncml"
 grid.list = lapply(variables, function (var) {
