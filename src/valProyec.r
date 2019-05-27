@@ -40,11 +40,12 @@ patronesLegend[["P5"]] = c("PSL", "R850")
 patronesLegend[["P6"]] = c("PSL", "R850", "U250")
 patronesLegend[["P7"]] = c("PSL", "T850", "U250","Q850", "R850")
 patronesLegend[["P8"]] = c("muchas")
-patronesLegend[["PCs"]] = c("PCA")
+patronesLegend[["P7PCs"]] = paste0("PCA(",paste0(patronesLegend[["P7"]], collapse = ", "), ")", collapse = "")
+patronesLegend[["P8PCs"]] = paste0("PCA(",paste0(patronesLegend[["P8"]], collapse = ", "), ")", collapse = "")
 opcionPatrones = c("P2", "P5")
 
 colores = c("blue", "orange")
-GUARDA = TRUE
+GUARDA = F
 for (gcm in gcms) {
   i = 1
   if (GUARDA){
@@ -63,7 +64,8 @@ for (gcm in gcms) {
     dev.off()
   }
 }
-opcionPatrones = c("P2", "P5", "P7", "PCs", "Completo")
+gcms = c("Canes", "Cnrm", "Gfdl", "Miroc", "MpiLr", "MpiMr")
+opcionPatrones = c("P2", "P5", "P7", "P7PCs", "P8PCs")
 colores = c("blue", "green","orange", "purple", "red")
 anios = getYearsAsINDEX(prediccionFinal)
 aniomin = min(anios)
@@ -80,10 +82,8 @@ for(n in vecinos){
     }
     plot(1, type="n", xlab="Años", ylab="Pr", xlim=c(2006, 2100), ylim=c(10, 4500), main = paste(gcm, "n vecinos", n))
     for (patron in opcionPatrones){
-      if(patron == "PCs"){
-        load(paste0(ruta, "data/proyeccion/resultados/pred", gcm, "patronP7RFPCs.rda"))
-      }else if (patron == "Completo"){
-        load(paste0(ruta, "data/proyeccion/resultados/pred", gcm, "nvecions", n, "patronP8RFCompleto.rda"))
+      if(grepl("PCs", patron)){
+        load(paste0(ruta, "data/proyeccion/resultados/pred", gcm, "patron", substr(patron, 1, 2),"RFPCs.rda"))
       }else{
         load(paste0(ruta, "data/proyeccion/resultados/pred", gcm, "nvecions", n, "patron", patron, "RF.rda")) 
       }
@@ -97,8 +97,8 @@ for(n in vecinos){
       lines(2006:2100, serie, col = colores[i])
       i = i + 1
     }
-    legend("topleft", lty = 1, col = colores, legend = c(paste(patronesLegend[["P2"]], collapse = ", "), paste(patronesLegend[["P5"]], collapse = ", "), paste(patronesLegend[["P7"]], collapse = ", "),
-                                                         paste(patronesLegend[["PCs"]], collapse = ", "), paste(patronesLegend[["P8"]], collapse = ", ")))
+    legend("topleft", lty = 1, col = colores, legend = c(paste(patronesLegend[["P2"]], collapse = ", "), paste(patronesLegend[["P5"]], collapse = ", "), 
+                                                         paste(patronesLegend[["P7"]], collapse = ", "), paste(patronesLegend[["P7PCs"]], collapse = ", "), paste(patronesLegend[["P8PCs"]], collapse = ", ")))
     if(GUARDA){
       dev.off()
     }
