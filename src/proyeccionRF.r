@@ -39,7 +39,8 @@ patrones[["P4"]] = c("psl", "ta@85000", "ua@25000","hus@85000")
 patrones[["P5"]] = c("psl", "hur@85000")
 patrones[["P6"]] = c("psl", "hur@85000", "ua@25000")
 patrones[["P7"]] = c("psl", "ta@85000", "ua@25000","hus@85000", "hur@85000")
-opcionPatrones = c("P2", "P5", "P7")
+patrones[["P8"]] = c("hur@25000", "hur@50000", "hur@85000", "hus@25000", "hus@50000", "hus@85000", "ta@25000", "ta@50000", "ta@85000", "ua@25000", "ua@50000", "ua@85000", "va@25000", "va@50000", "va@85000", "psl")
+opcionPatrones = c("P2", "P5", "P7", "P8")
 
 nvecinos = c(1, 16, 25)
 

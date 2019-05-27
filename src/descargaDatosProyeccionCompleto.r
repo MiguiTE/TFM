@@ -18,168 +18,170 @@ loginUDG(username = "Miguel", password = "sherpa")
 #obs = loadStationData(dataset = "data/DCCMS_obs.zip", var = "pr")
 
 ## REA (ERA-Interim)
-dataset = "http://meteo.unican.es/tds5/dodsC/interim/interim075.ncml"
+# dataset = "http://meteo.unican.es/tds5/dodsC/interim/interim075.ncml"
 
-variables = c("hur250", "hur500", "hur850", "hus250", "hus500", "hus850", "ta250", "ta500", "ta850", "ua250", "ua500", "ua850", "va250", "va500", "va850", "psl")
-nvars = length(variables)
-grid.list = lapply(variables, function (var) {
-  tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6), time = "DD", aggr.d = "mean") #Descarga
-  grid = getGrid(tmp) #Sacar grid
-  interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
-                                         y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
-})
-grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
-interim = makeMultiGrid(grid.list)
-grid = getGrid(grid.list[[1]])
+# variables = c("hur250", "hur500", "hur850", "hus250", "hus500", "hus850", "ta250", "ta500", "ta850", "ua250", "ua500", "ua850", "va250", "va500", "va850", "psl")
+# nvars = length(variables)
+# grid.list = lapply(variables, function (var) {
+#   tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6), time = "DD", aggr.d = "mean") #Descarga
+#   grid = getGrid(tmp) #Sacar grid
+#   interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
+#                                          y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
+# })
+# grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
+# interim = makeMultiGrid(grid.list)
+# grid = getGrid(grid.list[[1]])
 
-save(interim, file = paste0(ruta, "data/proyeccionInterim.rda"))
+# save(interim, file = paste0(ruta, "data/proyeccionInterim.rda"))
+load(paste0(ruta, "data/proyeccionInterim.rda"))
+grid = getGrid(interim)
 rm(interim)
 
-variables = c("hur@25000", "hur@50000", "hur@85000", "hus@25000", "hus@50000", "hus@85000", "ta@25000", "ta@50000", "ta@85000", "ua@25000", "ua@50000", "ua@85000", "va@25000", "va@50000", "va@85000", "psl")
+# variables = c("hur@25000", "hur@50000", "hur@85000", "hus@25000", "hus@50000", "hus@85000", "ta@25000", "ta@50000", "ta@85000", "ua@25000", "ua@50000", "ua@85000", "va@25000", "va@50000", "va@85000", "psl")
 
-# GCM (CANESM2, historical)
-dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/CCCMA/CANESM2/historical/day/cccma_canesm2_historical_r1i1p1.ncml"
-grid.list = lapply(variables, function (var) {
-  tmp = loadGridData(dataset, var = var,  lonLim = c(22, 46), latLim = c(-22, 0)) #Descarga
-  interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
-                                         y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
-})
-grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
-canesm2.historical = makeMultiGrid(grid.list)
-
-
-## GCM (CANESM2, RCP85)
-dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/CCCMA/CANESM2/rcp85/day/cccma_canesm2_rcp85_r1i1p1.ncml"
-grid.list = lapply(variables, function (var) {
-  tmp = loadGridData(dataset, var = var,  lonLim = c(22, 46), latLim = c(-22, 0)) #Descarga
-  interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
-                                         y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
-})
-grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
-canesm2.rcp85 = makeMultiGrid(grid.list)
-
-save(canesm2.historical, canesm2.rcp85, file =paste0(ruta, "data/proyeccionCanes.rda"))
-rm(canesm2.rcp85, canesm2.historical)
-
-## GCM(CNRM, historical)
-dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/CNRM-CERFACS/CNRM-CM5/historical/day/cnrm-cerfacs_cnrm-cm5_historical_r1i1p1.ncml"
-grid.list = lapply(variables, function (var) {
-  tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
-  interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
-                                         y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
-})
-grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
-cnrm.historial = makeMultiGrid(grid.list)
+# # GCM (CANESM2, historical)
+# dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/CCCMA/CANESM2/historical/day/cccma_canesm2_historical_r1i1p1.ncml"
+# grid.list = lapply(variables, function (var) {
+#   tmp = loadGridData(dataset, var = var,  lonLim = c(22, 46), latLim = c(-22, 0)) #Descarga
+#   interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
+#                                          y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
+# })
+# grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
+# canesm2.historical = makeMultiGrid(grid.list)
 
 
-## GCM (CNRM, RCP85)
-dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/CNRM-CERFACS/CNRM-CM5/rcp85/day/cnrm-cerfacs_cnrm-cm5_rcp85_r1i1p1.ncml"
-grid.list = lapply(variables, function (var) {
-  tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
-  interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
-                                         y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
-})
-grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
-cnrm.rcp85 = makeMultiGrid(grid.list)
+# ## GCM (CANESM2, RCP85)
+# dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/CCCMA/CANESM2/rcp85/day/cccma_canesm2_rcp85_r1i1p1.ncml"
+# grid.list = lapply(variables, function (var) {
+#   tmp = loadGridData(dataset, var = var,  lonLim = c(22, 46), latLim = c(-22, 0)) #Descarga
+#   interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
+#                                          y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
+# })
+# grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
+# canesm2.rcp85 = makeMultiGrid(grid.list)
 
-save(cnrm.historial, cnrm.rcp85, file =paste0(ruta, "data/proyeccionCnrm.rda"))
-rm(cnrm.historial, cnrm.rcp85)
+# save(canesm2.historical, canesm2.rcp85, file =paste0(ruta, "data/proyeccionCanes.rda"))
+# rm(canesm2.rcp85, canesm2.historical)
 
-## GCM (GFDL, historical)
-dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/NOAA-GFDL/GFDL-ESM2M/historical/day/noaa-gfdl_gfdl-esm2m_historical_r1i1p1.ncml"
-grid.list = lapply(variables, function (var) {
-  tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
-  interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
-                                         y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
-})
-grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
-gfdl.historical = makeMultiGrid(grid.list)
-
-
-## GCM (GFDL, RCP85)
-dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/NOAA-GFDL/GFDL-ESM2M/rcp85/day/noaa-gfdl_gfdl-esm2m_rcp85_r1i1p1.ncml"
-grid.list = lapply(variables, function (var) {
-  tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
-  interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
-                                         y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
-})
-grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
-gfdl.rcp85 = makeMultiGrid(grid.list)
-
-save(gfdl.historical, gfdl.rcp85, file = paste0(ruta, "data/proyeccionGfdl.rda"))
-rm(gfdl.historical, gfdl.rcp85)
-
-## GCM (MIROC, historical)
-dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/MIROC/MIROC-ESM/historical/day/miroc_miroc-esm_historical_r1i1p1.ncml"
-grid.list = lapply(variables, function (var) {
-  tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
-  interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
-                                         y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
-})
-grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
-miroc.historical = makeMultiGrid(grid.list)
+# ## GCM(CNRM, historical)
+# dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/CNRM-CERFACS/CNRM-CM5/historical/day/cnrm-cerfacs_cnrm-cm5_historical_r1i1p1.ncml"
+# grid.list = lapply(variables, function (var) {
+#   tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
+#   interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
+#                                          y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
+# })
+# grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
+# cnrm.historial = makeMultiGrid(grid.list)
 
 
-## GCM (MIROC, RCP85)
-dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/MIROC/MIROC-ESM/rcp85/day/miroc_miroc-esm_rcp85_r1i1p1.ncml"
-grid.list = lapply(variables, function (var) {
-  tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
-  interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
-                                         y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
-})
-grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
-miroc.rcp85 = makeMultiGrid(grid.list)
+# ## GCM (CNRM, RCP85)
+# dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/CNRM-CERFACS/CNRM-CM5/rcp85/day/cnrm-cerfacs_cnrm-cm5_rcp85_r1i1p1.ncml"
+# grid.list = lapply(variables, function (var) {
+#   tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
+#   interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
+#                                          y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
+# })
+# grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
+# cnrm.rcp85 = makeMultiGrid(grid.list)
 
-save(miroc.historical, miroc.rcp85, file = paste0(ruta, "data/proyeccionMiroc.rda"))
-rm(miroc.historical, miroc.rcp85)
+# save(cnrm.historial, cnrm.rcp85, file =paste0(ruta, "data/proyeccionCnrm.rda"))
+# rm(cnrm.historial, cnrm.rcp85)
 
-## GCM (MPI-LR, historical)
-dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/MPI-M/MPI-ESM-LR/historical/day/mpi-m_mpi-esm-lr_historical_r1i1p1.ncml"
-grid.list = lapply(variables, function (var) {
-  tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
-  interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
-                                         y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
-})
-grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
-mpi.lr.historical = makeMultiGrid(grid.list)
-
-
-## GCM (MPI-LR, RCP85)
-dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/MPI-M/MPI-ESM-LR/rcp85/day/mpi-m_mpi-esm-lr_rcp85_r1i1p1.ncml"
-grid.list = lapply(variables, function (var) {
-  tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
-  interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
-                                         y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
-})
-grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
-mpi.lr.rcp85 = makeMultiGrid(grid.list)
-
-save(mpi.lr.historical, mpi.lr.rcp85, file = paste0(ruta, "data/proyeccionMpiLr.rda"))
-rm(mpi.lr.historical, mpi.lr.rcp85)
-
-## GCM (MPI-MR, historical)
-dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/MPI-M/MPI-ESM-MR/historical/day/mpi-m_mpi-esm-mr_historical_r1i1p1.ncml"
-grid.list = lapply(variables, function (var) {
-  tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
-  interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
-                                         y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
-})
-grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
-mpi.mr.historical = makeMultiGrid(grid.list)
+# ## GCM (GFDL, historical)
+# dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/NOAA-GFDL/GFDL-ESM2M/historical/day/noaa-gfdl_gfdl-esm2m_historical_r1i1p1.ncml"
+# grid.list = lapply(variables, function (var) {
+#   tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
+#   interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
+#                                          y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
+# })
+# grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
+# gfdl.historical = makeMultiGrid(grid.list)
 
 
-## GCM (MPI-MR, RCP85)
-dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/MPI-M/MPI-ESM-MR/rcp85/day/mpi-m_mpi-esm-mr_rcp85_r1i1p1.ncml"
-grid.list = lapply(variables, function (var) {
-  tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
-  interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
-                                         y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
-})
-grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
-mpi.mr.rcp85 = makeMultiGrid(grid.list)
+# ## GCM (GFDL, RCP85)
+# dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/NOAA-GFDL/GFDL-ESM2M/rcp85/day/noaa-gfdl_gfdl-esm2m_rcp85_r1i1p1.ncml"
+# grid.list = lapply(variables, function (var) {
+#   tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
+#   interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
+#                                          y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
+# })
+# grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
+# gfdl.rcp85 = makeMultiGrid(grid.list)
 
-save(mpi.mr.historical, mpi.mr.rcp85, file = paste0(ruta, "data/proyeccionMpiMr.rda"))
-rm(mpi.mr.historical, mpi.mr.rcp85)
+# save(gfdl.historical, gfdl.rcp85, file = paste0(ruta, "data/proyeccionGfdl.rda"))
+# rm(gfdl.historical, gfdl.rcp85)
+
+# ## GCM (MIROC, historical)
+# dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/MIROC/MIROC-ESM/historical/day/miroc_miroc-esm_historical_r1i1p1.ncml"
+# grid.list = lapply(variables, function (var) {
+#   tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
+#   interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
+#                                          y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
+# })
+# grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
+# miroc.historical = makeMultiGrid(grid.list)
+
+
+# ## GCM (MIROC, RCP85)
+# dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/MIROC/MIROC-ESM/rcp85/day/miroc_miroc-esm_rcp85_r1i1p1.ncml"
+# grid.list = lapply(variables, function (var) {
+#   tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
+#   interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
+#                                          y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
+# })
+# grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
+# miroc.rcp85 = makeMultiGrid(grid.list)
+
+# save(miroc.historical, miroc.rcp85, file = paste0(ruta, "data/proyeccionMiroc.rda"))
+# rm(miroc.historical, miroc.rcp85)
+
+# ## GCM (MPI-LR, historical)
+# dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/MPI-M/MPI-ESM-LR/historical/day/mpi-m_mpi-esm-lr_historical_r1i1p1.ncml"
+# grid.list = lapply(variables, function (var) {
+#   tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
+#   interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
+#                                          y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
+# })
+# grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
+# mpi.lr.historical = makeMultiGrid(grid.list)
+
+
+# ## GCM (MPI-LR, RCP85)
+# dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/MPI-M/MPI-ESM-LR/rcp85/day/mpi-m_mpi-esm-lr_rcp85_r1i1p1.ncml"
+# grid.list = lapply(variables, function (var) {
+#   tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
+#   interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
+#                                          y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
+# })
+# grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
+# mpi.lr.rcp85 = makeMultiGrid(grid.list)
+
+# save(mpi.lr.historical, mpi.lr.rcp85, file = paste0(ruta, "data/proyeccionMpiLr.rda"))
+# rm(mpi.lr.historical, mpi.lr.rcp85)
+
+# ## GCM (MPI-MR, historical)
+# dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/MPI-M/MPI-ESM-MR/historical/day/mpi-m_mpi-esm-mr_historical_r1i1p1.ncml"
+# grid.list = lapply(variables, function (var) {
+#   tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
+#   interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
+#                                          y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
+# })
+# grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
+# mpi.mr.historical = makeMultiGrid(grid.list)
+
+
+# ## GCM (MPI-MR, RCP85)
+# dataset = "http://meteo.unican.es/tds5/dodsC/cmip5/MPI-M/MPI-ESM-MR/rcp85/day/mpi-m_mpi-esm-mr_rcp85_r1i1p1.ncml"
+# grid.list = lapply(variables, function (var) {
+#   tmp = loadGridData(dataset, var = var,  lonLim = c(28, 40), latLim = c(-20, -6)) #Descarga
+#   interpGrid(tmp, new.coordinates = list(x = seq(grid$x[1], grid$x[2], 2),
+#                                          y = seq(grid$y[1], grid$y[2], 2))) # Interpolarlo a 2º
+# })
+# grid.list = intersectGrid.time(grid.list, which.return = seq(1, nvars))
+# mpi.mr.rcp85 = makeMultiGrid(grid.list)
+
+# save(mpi.mr.historical, mpi.mr.rcp85, file = paste0(ruta, "data/proyeccionMpiMr.rda"))
+# rm(mpi.mr.historical, mpi.mr.rcp85)
 
 
 ## GCM (NORESM, historical)
