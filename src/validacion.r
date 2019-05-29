@@ -46,11 +46,11 @@ loadNNRF = function(estacion,modelo){
 modelos = c("KNN", "GLM", paste("NNRF", seq(2,21, 2), sep = ""), "RF")
 estaciones = c("primavera", "verano", "otoño", "invierno")
 
-pdf("imagenes/Spearman.pdf")
-par(mfrow=c(2,2))
-par(mfrow=c(2,2), mar=c(5, 4, 4, 3))
+#pdf("imagenes/Spearman.pdf")
+#par(mfrow=c(2,2), mar=c(5, 4, 4, 3))
+#par(mfrow=c(2,1))
 for(estacion in estaciones){
-  #pdf(paste0("imagenes/Spearman", estacion, ".pdf", collapse = ""))
+  pdf(paste0("imagenes/Spearman", estacion, ".pdf", collapse = ""))
   tmp = lapply(modelos, function(modelo){
     if (modelo == "GLM"){
       loadGLM2(estacion)
@@ -91,16 +91,16 @@ for(estacion in estaciones){
   plot(seq(0.55,13.5, length.out = 13), tiempos, type = "l", col="lightgrey", axes = FALSE, bty = "n", xlab = "", ylab = "", xlim = c(0,14))
   axis(4)
   mtext("Tiempo", side=4, line = 1.75, cex = 0.8)
-  #dev.off()
+  dev.off()
 }
-dev.off()
+#dev.off()
 
 ######################################################################################3
-pdf("imagenes/R01.pdf")
-par(mfrow=c(2,2))
-par(mfrow=c(2,2), mar=c(5, 4, 4, 3))
+#pdf("imagenes/R01.pdf")
+#par(mfrow=c(2,2), mar=c(5, 4, 4, 3))
+#par(mfrow=c(2,1))
 for(estacion in estaciones){
-  #pdf(paste0("imagenes/R01", estacion, ".pdf", collapse = ""))
+  pdf(paste0("imagenes/R01", estacion, ".pdf", collapse = ""))
   tmp = lapply(modelos, function(modelo){
     if (modelo == "GLM"){
       loadGLM2(estacion)
@@ -140,21 +140,17 @@ for(estacion in estaciones){
   plot(seq(0.55,13.5, length.out = 13), tiempos, type = "l", col="lightgrey", axes = FALSE, bty = "n", xlab = "", ylab = "", xlim = c(0,14))
   axis(4)
   mtext("Tiempo", side=4, line = 1.75, cex = 0.8)
-  #dev.off()
+  dev.off()
 }
-dev.off()
-for(modelo in modelos){
-  rm(list = c(paste0("yRegPred",substr(modelo, 1, 4)), paste0("yRegReal",substr(modelo, 1, 4)), 
-              paste0("yOccPred",substr(modelo, 1, 4)), paste0("yOccReal",substr(modelo, 1, 4))))
-}
+#dev.off()
 
 
 ######################################################################################3
-pdf("imagenes/SDII.pdf")
-par(mfrow=c(2,2))
-par(mfrow=c(2,2), mar=c(5, 4, 4, 3))
+#pdf("imagenes/SDII.pdf")
+#par(mfrow=c(2,2), mar=c(5, 4, 4, 3))
+#par(mfrow=c(2,1))
 for(estacion in estaciones){
-  #pdf(paste0("imagenes/SDII", estacion, ".pdf", collapse = ""))
+  pdf(paste0("imagenes/SDII", estacion, ".pdf", collapse = ""))
   tmp = lapply(modelos, function(modelo){
     if (modelo == "GLM"){
       loadGLM2(estacion)
@@ -194,9 +190,9 @@ for(estacion in estaciones){
   plot(seq(0.55,13.5, length.out = 13), tiempos, type = "l", col="lightgrey", axes = FALSE, bty = "n", xlab = "", ylab = "", xlim = c(0,14))
   axis(4)
   mtext("Tiempo", side=4, line = 1.75, cex = 0.8)
-  #dev.off()
+  dev.off()
 }
-dev.off()
+#dev.off()
 for(modelo in modelos){
   rm(list = c(paste0("yRegPred",substr(modelo, 1, 4)), paste0("yRegReal",substr(modelo, 1, 4)), 
               paste0("yOccPred",substr(modelo, 1, 4)), paste0("yOccReal",substr(modelo, 1, 4))))
