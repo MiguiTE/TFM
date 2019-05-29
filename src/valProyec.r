@@ -46,23 +46,23 @@ opcionPatrones = c("P2", "P5")
 
 colores = c("blue", "orange")
 GUARDA = F
-for (gcm in gcms) {
-  i = 1
-  if (GUARDA){
+if (GUARDA) {
+  for (gcm in gcms) {
+    i = 1
     pdf(paste0(ruta, "imagenes/proyeccionGLMgcm", gcm, ".pdf", collaspe = ""))
-  }
-  plot(1, type="n", xlab="Años", ylab="Pr", xlim=c(2006, 2100), ylim=c(10, 4500), main = gcm)
-  for (patron in opcionPatrones){
-    load(paste0(ruta, "data/proyeccion/resultados/pred", gcm, "patron", patron, "GLM.rda"))
-    tmp = aggregateGrid(prediccionFinal, aggr.m = list(FUN = "sum"), aggr.y = list(FUN = "sum"))
-    serie = rowMeans(tmp$Data)
-    lines(2006:2100, serie, col = colores[i])
-    i = i + 1
-  }
-  legend("topleft", lty = 1, col = colores, legend = c(paste(patronesLegend[["P2"]], collapse = ", "), paste(patronesLegend[["P5"]], collapse = ", ")))
-  if (GUARDA){
+    plot(1, type="n", xlab="Años", ylab="Pr", xlim=c(2006, 2100), ylim=c(10, 4500), main = gcm)
+    for (patron in opcionPatrones){
+      load(paste0(ruta, "data/proyeccion/resultados/pred", gcm, "patron", patron, "GLM.rda"))
+      tmp = aggregateGrid(prediccionFinal, aggr.m = list(FUN = "sum"), aggr.y = list(FUN = "sum"))
+      serie = rowMeans(tmp$Data)
+      lines(2006:2100, serie, col = colores[i])
+      i = i + 1
+    }
+    legend("topleft", lty = 1, col = colores, legend = c(paste(patronesLegend[["P2"]], collapse = ", "), paste(patronesLegend[["P5"]], collapse = ", ")))
     dev.off()
   }
+} else {
+  load(paste0(ruta, "data/proyeccion/resultados/predCanespatronP2GLM.rda"))
 }
 gcms = c("Canes", "Cnrm", "Gfdl", "Miroc", "MpiLr", "MpiMr")
 opcionPatrones = c("P2", "P5", "P7", "P7PCs", "P8PCs")
@@ -73,7 +73,7 @@ aniomax = max(anios)
 aniosT = aniomin:aniomax
 
 vecinos = c(1, 25)
-#vecinos = c(1)
+GUARDA = T
 for(n in vecinos){
   for (gcm in gcms){
     i = 1
