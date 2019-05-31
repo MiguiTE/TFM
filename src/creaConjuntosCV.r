@@ -28,79 +28,152 @@ estaciones[["verano"]] = c(6, 7, 8)
 estaciones[["otoño"]] = c(9, 10, 11)
 
 
+ESTACIONES = F
+ANUAL = T
 
-# Crear conjuntos de Validacion Cruzada para GLM-KNN
-# Observaciones
-ruta.obs = paste0(ruta, "data/VALUE_ECA_86_v2.zip", collapse = "")
-# Predictores
-load(paste0(ruta,"data/x.rda", collapse = ""))
+if (ESTACIONES) {
+    # Crear conjuntos de Validacion Cruzada para GLM-KNN
+    # Observaciones
+    ruta.obs = paste0(ruta, "data/VALUE_ECA_86_v2.zip", collapse = "")
+    # Predictores
+    load(paste0(ruta,"data/x.rda", collapse = ""))
 
-predictandos = c("precip", "tmax", "tmin")
+    predictandos = c("precip", "tmax", "tmin")
 
-for(var in predictandos){
-    for(estacion in names(estaciones)){
-        xValue = lapply(1:n_regions, function(i){
-            tmp = subsetGrid(x, lonLim = longitudes_x[,i], latLim=latitudes_x[,i], season=estaciones[[estacion]])
-            if(anyNA(tmp$Data)){
-                tmp = filterNA(tmp)
-            }
-            return(tmp)
-        })
-        yValueReg = lapply(1:n_regions, function(i){
-            tmp = loadStationData(ruta.obs, var = var, season = estaciones[[estacion]], years = 1979:2008, lonLim =longitudes_y[,i], latLim = latitudes_y[,i])
-            if(anyNA(tmp$Data)){
-                tmp = filterNA(tmp)
-            }
-            getTemporalIntersection(xValue[[i]], tmp, which.return = "prd")
-        })
+    for(var in predictandos){
+        for(estacion in names(estaciones)){
+            xValue = lapply(1:n_regions, function(i){
+                tmp = subsetGrid(x, lonLim = longitudes_x[,i], latLim=latitudes_x[,i], season=estaciones[[estacion]])
+                if(anyNA(tmp$Data)){
+                    tmp = filterNA(tmp)
+                }
+                return(tmp)
+            })
+            yValueReg = lapply(1:n_regions, function(i){
+                tmp = loadStationData(ruta.obs, var = var, season = estaciones[[estacion]], years = 1979:2008, lonLim =longitudes_y[,i], latLim = latitudes_y[,i])
+                if(anyNA(tmp$Data)){
+                    tmp = filterNA(tmp)
+                }
+                getTemporalIntersection(xValue[[i]], tmp, which.return = "prd")
+            })
 
-        xValue = lapply(1:n_regions, function(i){
-            getTemporalIntersection(xValue[[i]], yValueReg[[i]], which.return = "obs")
-        })
-        yValueOcc =lapply(yValueReg, function(y) binaryGrid(y, condition = "GT", threshold = 1))
+            xValue = lapply(1:n_regions, function(i){
+                getTemporalIntersection(xValue[[i]], yValueReg[[i]], which.return = "obs")
+            })
+            yValueOcc =lapply(yValueReg, function(y) binaryGrid(y, condition = "GT", threshold = 1))
 
-        dataOccCV = lapply(1:n_regions, function(i) dataSplit(xValue[[i]], yValueOcc[[i]], foldsAnios, type="chronological"))
-        dataRegCV = lapply(1:n_regions, function(i) dataSplit(xValue[[i]], yValueReg[[i]], foldsAnios, type="chronological"))
+            dataOccCV = lapply(1:n_regions, function(i) dataSplit(xValue[[i]], yValueOcc[[i]], foldsAnios, type="chronological"))
+            dataRegCV = lapply(1:n_regions, function(i) dataSplit(xValue[[i]], yValueReg[[i]], foldsAnios, type="chronological"))
 
-        save(dataOccCV, dataRegCV, file=paste0(ruta, "data/datosEstaciones/", estacion, "/", var, "/GLM-KNN/datos.rda", collapse=""))
+            save(dataOccCV, dataRegCV, file=paste0(ruta, "data/datosEstaciones/", estacion, "/", var, "/GLM-KNN/datos.rda", collapse=""))
+        }
+    }
+    # Liberar un poco de memoria
+    rm(x, xValue, yValueOcc, yValueReg, dataOccCV, dataRegCV)
+
+    # Crear conjuntos de Validacion Cruzada para GLM-KNN
+    # Observaciones
+    ruta.obs = paste0(ruta, "data/VALUE_ECA_86_v2.zip", collapse = "")
+    # Predictores
+    load(paste0(ruta,"data/xRF.rda", collapse = ""))
+
+    predictandos = c("precip", "tmax", "tmin")
+
+    for(var in predictandos){
+        for(estacion in names(estaciones)){
+            xValue = lapply(1:n_regions, function(i){
+                tmp = subsetGrid(xRF, lonLim = longitudes_x[,i], latLim=latitudes_x[,i], season=estaciones[[estacion]])
+                if(anyNA(tmp$Data)){
+                    tmp = filterNA(tmp)
+                }
+                return(tmp)
+            })
+            yValueReg = lapply(1:n_regions, function(i){
+                tmp = loadStationData(ruta.obs, var = var, season = estaciones[[estacion]], years = 1979:2008, lonLim =longitudes_y[,i], latLim = latitudes_y[,i])
+                if(anyNA(tmp$Data)){
+                    tmp = filterNA(tmp)
+                }
+                getTemporalIntersection(xValue[[i]], tmp, which.return = "prd")
+            })
+
+            xValue = lapply(1:n_regions, function(i){
+                getTemporalIntersection(xValue[[i]], yValueReg[[i]], which.return = "obs")
+            })
+            yValueOcc =lapply(yValueReg, function(y) binaryGrid(y, condition = "GT", threshold = 1))
+
+            dataOccCV = lapply(1:n_regions, function(i) dataSplit(xValue[[i]], yValueOcc[[i]], foldsAnios, type="chronological"))
+            dataRegCV = lapply(1:n_regions, function(i) dataSplit(xValue[[i]], yValueReg[[i]], foldsAnios, type="chronological"))
+
+            save(dataOccCV, dataRegCV, file=paste0(ruta, "data/datosEstaciones/", estacion, "/", var, "/RF/datos.rda", collapse=""))
+        }
     }
 }
-# Liberar un poco de memoria
-rm(x, xValue, yValueOcc, yValueReg, dataOccCV, dataRegCV)
 
-# Crear conjuntos de Validacion Cruzada para GLM-KNN
-# Observaciones
-ruta.obs = paste0(ruta, "data/VALUE_ECA_86_v2.zip", collapse = "")
-# Predictores
-load(paste0(ruta,"data/xRF.rda", collapse = ""))
+if (ANUAL) {
+    # Crear conjuntos de Validacion Cruzada Anual para GLM-KNN
+    # Observaciones
+    ruta.obs = paste0(ruta, "data/VALUE_ECA_86_v2.zip", collapse = "")
+    # Predictores
+    load(paste0(ruta,"data/x.rda", collapse = ""))
 
-predictandos = c("precip", "tmax", "tmin")
+    var = "precip"
+    xValue = lapply(1:n_regions, function(i){
+        tmp = subsetGrid(x, lonLim = longitudes_x[,i], latLim=latitudes_x[,i])
+        if(anyNA(tmp$Data)){
+            tmp = filterNA(tmp)
+        }
+        return(tmp)
+    })
+    yValueReg = lapply(1:n_regions, function(i){
+        tmp = loadStationData(ruta.obs, var = var, years = 1979:2008, lonLim =longitudes_y[,i], latLim = latitudes_y[,i])
+        if(anyNA(tmp$Data)){
+            tmp = filterNA(tmp)
+        }
+        getTemporalIntersection(xValue[[i]], tmp, which.return = "prd")
+    })
 
-for(var in predictandos){
-    for(estacion in names(estaciones)){
-        xValue = lapply(1:n_regions, function(i){
-            tmp = subsetGrid(xRF, lonLim = longitudes_x[,i], latLim=latitudes_x[,i], season=estaciones[[estacion]])
-            if(anyNA(tmp$Data)){
-                tmp = filterNA(tmp)
-            }
-            return(tmp)
-        })
-        yValueReg = lapply(1:n_regions, function(i){
-            tmp = loadStationData(ruta.obs, var = var, season = estaciones[[estacion]], years = 1979:2008, lonLim =longitudes_y[,i], latLim = latitudes_y[,i])
-            if(anyNA(tmp$Data)){
-                tmp = filterNA(tmp)
-            }
-            getTemporalIntersection(xValue[[i]], tmp, which.return = "prd")
-        })
+    xValue = lapply(1:n_regions, function(i){
+        getTemporalIntersection(xValue[[i]], yValueReg[[i]], which.return = "obs")
+    })
+    yValueOcc =lapply(yValueReg, function(y) binaryGrid(y, condition = "GT", threshold = 1))
 
-        xValue = lapply(1:n_regions, function(i){
-            getTemporalIntersection(xValue[[i]], yValueReg[[i]], which.return = "obs")
-        })
-        yValueOcc =lapply(yValueReg, function(y) binaryGrid(y, condition = "GT", threshold = 1))
+    dataOccCV = lapply(1:n_regions, function(i) dataSplit(xValue[[i]], yValueOcc[[i]], foldsAnios, type="chronological"))
+    dataRegCV = lapply(1:n_regions, function(i) dataSplit(xValue[[i]], yValueReg[[i]], foldsAnios, type="chronological"))
 
-        dataOccCV = lapply(1:n_regions, function(i) dataSplit(xValue[[i]], yValueOcc[[i]], foldsAnios, type="chronological"))
-        dataRegCV = lapply(1:n_regions, function(i) dataSplit(xValue[[i]], yValueReg[[i]], foldsAnios, type="chronological"))
+    save(dataOccCV, dataRegCV, file=paste0(ruta, "data/valueAnual/datos/GLM-KNN/datosAnual.rda", collapse=""))
+    # Liberar un poco de memoria
+    rm(x, xValue, yValueOcc, yValueReg, dataOccCV, dataRegCV)
 
-        save(dataOccCV, dataRegCV, file=paste0(ruta, "data/datosEstaciones/", estacion, "/", var, "/RF/datos.rda", collapse=""))
-    }
+    # Crear conjuntos de Validacion Cruzada Anual para RF
+    # Observaciones
+    ruta.obs = paste0(ruta, "data/VALUE_ECA_86_v2.zip", collapse = "")
+    # Predictores
+    load(paste0(ruta,"data/xRF.rda", collapse = ""))
+
+    var = "precip"
+
+    xValue = lapply(1:n_regions, function(i){
+        tmp = subsetGrid(xRF, lonLim = longitudes_x[,i], latLim=latitudes_x[,i])
+        if(anyNA(tmp$Data)){
+            tmp = filterNA(tmp)
+        }
+        return(tmp)
+    })
+    yValueReg = lapply(1:n_regions, function(i){
+        tmp = loadStationData(ruta.obs, var = var, years = 1979:2008, lonLim =longitudes_y[,i], latLim = latitudes_y[,i])
+        if(anyNA(tmp$Data)){
+            tmp = filterNA(tmp)
+        }
+        getTemporalIntersection(xValue[[i]], tmp, which.return = "prd")
+    })
+
+    xValue = lapply(1:n_regions, function(i){
+        getTemporalIntersection(xValue[[i]], yValueReg[[i]], which.return = "obs")
+    })
+    yValueOcc =lapply(yValueReg, function(y) binaryGrid(y, condition = "GT", threshold = 1))
+
+    dataOccCV = lapply(1:n_regions, function(i) dataSplit(xValue[[i]], yValueOcc[[i]], foldsAnios, type="chronological"))
+    dataRegCV = lapply(1:n_regions, function(i) dataSplit(xValue[[i]], yValueReg[[i]], foldsAnios, type="chronological"))
+
+    save(dataOccCV, dataRegCV, file=paste0(ruta, "data/valueAnual/datos/RF/datosAnual.rda", collapse=""))
 }
