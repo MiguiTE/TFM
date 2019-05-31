@@ -8,17 +8,15 @@ library(downscaleR)
 ruta = "/home/jovyan/TFM/TFM/"
 nComp = 20 #Numero de componentes para PCA
 
-#No cambiar nada
+ESTACIONES = T
+ANUAL = T
 codigos = matrix(c(sprintf("%06i", 272), sprintf("%06i", 350), sprintf("%06i", 3946), sprintf("%06i", 232), sprintf("%06i", 355), sprintf("%06i", 32), sprintf("%06i", 3991), sprintf("%06i", 2006), sprintf("%06i", 708), sprintf("%06i", 191), sprintf("%06i", 4002), sprintf("%06i", 58), sprintf("%06i", 1686), sprintf("%06i", 62), sprintf("%06i", 450), sprintf("%06i", 333)), nrow=2, ncol=8)
-estaciones = c("primavera", "verano", "otoño", "invierno")
-for(estacion in estaciones){
-    print(paste("Estacion:", estacion))
-    load(paste0(ruta, "data/datosEstaciones/",estacion, "/precip/GLM-KNN/datos.rda", collapse = ""))
+
+regionaliza = function(dataRegCV){
     n_regions = length(dataRegCV)
     modelos = list()
     yRegPredKNN = list()
     yRegRealKNN = list()
-    start = Sys.time()
     for(region in 1:n_regions){
         print(paste("Region:", region))
         modelos[[region]] = list()
@@ -26,8 +24,6 @@ for(estacion in estaciones){
         prediccionReg = c()
         for(fold in names(dataRegCV[[region]])){
             print(paste("Fold:", fold))
-            dataOccCV[[region]][[fold]][["train"]][["y"]] = subsetStation(dataOccCV[[region]][[fold]][["train"]][["y"]], station.id = codigos[,region])
-            dataOccCV[[region]][[fold]][["test"]][["y"]] = subsetStation(dataOccCV[[region]][[fold]][["test"]][["y"]], station.id = codigos[,region])
             dataRegCV[[region]][[fold]][["train"]][["y"]] = subsetStation(dataRegCV[[region]][[fold]][["train"]][["y"]], station.id = codigos[,region])
             dataRegCV[[region]][[fold]][["test"]][["y"]] = subsetStation(dataRegCV[[region]][[fold]][["test"]][["y"]], station.id = codigos[,region])
             #Fase preparar datos train
@@ -49,7 +45,31 @@ for(estacion in estaciones){
         yRegPredKNN[[region]] = prediccionReg
         yRegRealKNN[[region]] = realidadReg
     }
-    timeElapsed = Sys.time() - start 
-    save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/GLM-KNN/KNN2.rda", collapse = ""))
-    save(yRegPredKNN, yRegRealKNN, timeElapsed, file = paste0(ruta, "data/resultados/", estacion, "/precip/GLM-KNN/KNN2.rda", collapse = ""))
+    return(list(modelos = modelos, yRegPredKNN = yRegPredKNN, yRegRealKNN = yRegRealKNN))
+}
+
+if (ESTACIONES) {
+    estaciones = c("primavera", "verano", "otoño", "invierno")
+    for(estacion in estaciones){
+        print(paste("Estacion:", estacion))
+        load(paste0(ruta, "data/datosEstaciones/",estacion, "/precip/GLM-KNN/datos.rda", collapse = ""))
+        resultado = regionaliza(dataRegCV)
+        modelos = resultado[["modelos"]]
+        yRegPredKNN = resultado[["yRegPredKNN"]]
+        yRegRealKNN = resultado[["yRegRealKNN"]]
+
+        save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/GLM-KNN/KNN2Est.rda", collapse = ""))
+        save(yRegPredKNN, yRegRealKNN, file = paste0(ruta, "data/resultados/", estacion, "/precip/GLM-KNN/KNN2Est.rda", collapse = ""))
+    }
+}
+
+if (ANUAL) {
+    load(paste0(ruta, "data/valueAnual/datos/precip/GLM-KNN/datosAnual.rda", collapse = ""))
+    resultado = regionaliza(dataRegCV)
+    modelos = resultado[["modelos"]]
+    yRegPredKNN = resultado[["yRegPredKNN"]]
+    yRegRealKNN = resultado[["yRegRealKNN"]]
+
+    save(modelos, file = paste0(ruta, "data/valueAnual/modelos/GLM-KNN/KNN2An.rda", collapse = ""))
+    save(yRegPredKNN, yRegRealKNN, file = paste0(ruta, "data/valueAnual/resultados/GLM-KNN/KNN2An.rda", collapse = ""))
 }

@@ -8,11 +8,11 @@ library(downscaleR)
 ruta = "/home/jovyan/TFM/TFM/"
 nComp = 20 #Numero de componentes para PCA
 
-#No cambiar nada
-estaciones = c("primavera", "verano", "otoño", "invierno")
-for(estacion in estaciones){
-    print(paste("Estacion:", estacion))
-    load(paste0(ruta, "data/datosEstaciones/",estacion, "/precip/GLM-KNN/datos.rda", collapse = ""))
+ESTACIONES = T
+ANUAL = T
+
+
+regionaliza = function(dataRegCV){
     n_regions = length(dataRegCV)
     modelos = list()
     yRegPredKNN = list()
@@ -43,6 +43,31 @@ for(estacion in estaciones){
         yRegPredKNN[[region]] = prediccionReg
         yRegRealKNN[[region]] = realidadReg
     }
-    save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/GLM-KNN/KNN.rda", collapse = ""))
-    save(yRegPredKNN, yRegRealKNN, file = paste0(ruta, "data/resultados/", estacion, "/precip/GLM-KNN/KNN.rda", collapse = ""))
+    return(list(modelos = modelos, yRegPredKNN = yRegPredKNN, yRegRealKNN = yRegRealKNN))
+}
+
+if (ESTACIONES) {
+    estaciones = c("primavera", "verano", "otoño", "invierno")
+    for(estacion in estaciones){
+        print(paste("Estacion:", estacion))
+        load(paste0(ruta, "data/datosEstaciones/",estacion, "/precip/GLM-KNN/datos.rda", collapse = ""))
+        resultado = regionaliza(dataRegCV)
+        modelos = resultado[["modelos"]]
+        yRegPredKNN = resultado[["yRegPredKNN"]]
+        yRegRealKNN = resultado[["yRegRealKNN"]]
+
+        save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/GLM-KNN/KNNEst.rda", collapse = ""))
+        save(yRegPredKNN, yRegRealKNN, file = paste0(ruta, "data/resultados/", estacion, "/precip/GLM-KNN/KNNEst.rda", collapse = ""))
+    }
+}
+
+if (ANUAL) {
+    load(paste0(ruta, "data/valueAnual/datos/precip/GLM-KNN/datosAnual.rda", collapse = ""))
+    resultado = regionaliza(dataRegCV)
+    modelos = resultado[["modelos"]]
+    yRegPredKNN = resultado[["yRegPredKNN"]]
+    yRegRealKNN = resultado[["yRegRealKNN"]]
+
+    save(modelos, file = paste0(ruta, "data/valueAnual/modelos/GLM-KNN/KNNAn.rda", collapse = ""))
+    save(yRegPredKNN, yRegRealKNN, file = paste0(ruta, "data/valueAnual/resultados/GLM-KNN/KNNAn.rda", collapse = ""))
 }

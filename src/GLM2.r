@@ -7,13 +7,12 @@ library(downscaleR)
 # Se pueden cambiar
 ruta = "/home/jovyan/TFM/TFM/"
 nComp = 20 #Numero de componentes para PCA
+ESTACIONES = T
+ANUAL = T
 
-#No cambiar nada
 codigos = matrix(c(sprintf("%06i", 272), sprintf("%06i", 350), sprintf("%06i", 3946), sprintf("%06i", 232), sprintf("%06i", 355), sprintf("%06i", 32), sprintf("%06i", 3991), sprintf("%06i", 2006), sprintf("%06i", 708), sprintf("%06i", 191), sprintf("%06i", 4002), sprintf("%06i", 58), sprintf("%06i", 1686), sprintf("%06i", 62), sprintf("%06i", 450), sprintf("%06i", 333)), nrow=2, ncol=8)
-estaciones = c("primavera", "verano", "otoño", "invierno")
-for(estacion in estaciones){
-    print(paste("Estacion:", estacion))
-    load(paste0(ruta, "data/datosEstaciones/",estacion, "/precip/GLM-KNN/datos.rda", collapse = ""))
+
+regionaliza = function(dataOccCV, dataRegCV){
     n_regions = length(dataOccCV)
     modelos = list()
     yOccPredGLM = list()
@@ -67,7 +66,36 @@ for(estacion in estaciones){
         yRegPredGLM[[region]] = prediccionReg
         yRegRealGLM[[region]] = realidadReg
     }
-    timeElapsed = Sys.time() - start
-    save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/GLM-KNN/GLM2.rda", collapse = ""))
-    save(yOccPredGLM, yOccRealGLM, yRegPredGLM, yRegRealGLM, timeElapsed, file = paste0(ruta, "data/resultados/", estacion, "/precip/GLM-KNN/GLM2.rda", collapse = ""))
+    return(list(modelos = modelos, yOccPredGLM = yOccPredGLM, yOccRealGLM = yOccRealGLM, yRegPredGLM = yRegPredGLM, yRegRealGLM = yRegRealGLM))
+}
+
+if (ESTACIONES){
+    #No cambiar nada
+    estaciones = c("primavera", "verano", "otoño", "invierno")
+    for(estacion in estaciones){
+        print(paste("Estacion:", estacion))
+        load(paste0(ruta, "data/datosEstaciones/",estacion, "/precip/GLM-KNN/datos.rda", collapse = ""))
+        resultado = regionaliza(dataOccCV, dataRegCV)
+        modelos = resultado[["modelos"]]
+        yOccPredGLM = resultado[["yOccPredGLM"]]
+        yOccRealGLM = resultado[["yOccRealGLM"]]
+        yRegPredGLM = resultado[["yRegPredGLM"]]
+        yRegRealGLM = resultado[["yRegRealGLM"]]
+
+        save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/GLM-KNN/GLM2Est.rda", collapse = ""))
+        save(yOccPredGLM, yOccRealGLM, yRegPredGLM, yRegRealGLM, file = paste0(ruta, "data/resultados/", estacion, "/precip/GLM-KNN/GLM2Est.rda", collapse = ""))
+    }
+}
+
+if (ANUAL) {
+    load(paste0(ruta, "data/valueAnual/datos/precip/GLM-KNN/datosAnual.rda", collapse = ""))
+    resultado = regionaliza(dataOccCV, dataRegCV)
+    modelos = resultado[["modelos"]]
+    yOccPredGLM = resultado[["yOccPredGLM"]]
+    yOccRealGLM = resultado[["yOccRealGLM"]]
+    yRegPredGLM = resultado[["yRegPredGLM"]]
+    yRegRealGLM = resultado[["yRegRealGLM"]]
+
+    save(modelos, file = paste0(ruta, "data/valueAnual/modelos/GLM-KNN/GLM2An.rda", collapse = ""))
+    save(yOccPredGLM, yOccRealGLM, yRegPredGLM, yRegRealGLM, file = paste0(ruta, "data/valueAnual/resultados/GLM-KNN/GLM2An.rda", collapse = ""))
 }

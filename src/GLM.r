@@ -7,12 +7,10 @@ library(downscaleR)
 # Se pueden cambiar
 ruta = "/home/jovyan/TFM/TFM/"
 nComp = 20 #Numero de componentes para PCA
+ESTACIONES = T
+ANUAL = T
 
-#No cambiar nada
-estaciones = c("primavera", "verano", "otoño", "invierno")
-for(estacion in estaciones){
-    print(paste("Estacion:", estacion))
-    load(paste0(ruta, "data/datosEstaciones/",estacion, "/precip/GLM-KNN/datos.rda", collapse = ""))
+regionaliza = function(dataOccCV, dataRegCV){
     n_regions = length(dataOccCV)
     modelos = list()
     yOccPredGLM = list()
@@ -61,6 +59,36 @@ for(estacion in estaciones){
         yRegPredGLM[[region]] = prediccionReg
         yRegRealGLM[[region]] = realidadReg
     }
-    save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/GLM-KNN/GLM.rda", collapse = ""))
-    save(yOccPredGLM, yOccRealGLM, yRegPredGLM, yRegRealGLM, file = paste0(ruta, "data/resultados/", estacion, "/precip/GLM-KNN/GLM.rda", collapse = ""))
+    return(list(modelos = modelos, yOccPredGLM = yOccPredGLM, yOccRealGLM = yOccRealGLM, yRegPredGLM = yRegPredGLM, yRegRealGLM = yRegRealGLM))
+}
+
+if (ESTACIONES){
+    #No cambiar nada
+    estaciones = c("primavera", "verano", "otoño", "invierno")
+    for(estacion in estaciones){
+        print(paste("Estacion:", estacion))
+        load(paste0(ruta, "data/datosEstaciones/",estacion, "/precip/GLM-KNN/datos.rda", collapse = ""))
+        resultado = regionaliza(dataOccCV, dataRegCV)
+        modelos = resultado[["modelos"]]
+        yOccPredGLM = resultado[["yOccPredGLM"]]
+        yOccRealGLM = resultado[["yOccRealGLM"]]
+        yRegPredGLM = resultado[["yRegPredGLM"]]
+        yRegRealGLM = resultado[["yRegRealGLM"]]
+
+        save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/GLM-KNN/GLMEst.rda", collapse = ""))
+        save(yOccPredGLM, yOccRealGLM, yRegPredGLM, yRegRealGLM, file = paste0(ruta, "data/resultados/", estacion, "/precip/GLM-KNN/GLMEst.rda", collapse = ""))
+    }
+}
+
+if (ANUAL) {
+    load(paste0(ruta, "data/valueAnual/datos/precip/GLM-KNN/datosAnual.rda", collapse = ""))
+    resultado = regionaliza(dataOccCV, dataRegCV)
+    modelos = resultado[["modelos"]]
+    yOccPredGLM = resultado[["yOccPredGLM"]]
+    yOccRealGLM = resultado[["yOccRealGLM"]]
+    yRegPredGLM = resultado[["yRegPredGLM"]]
+    yRegRealGLM = resultado[["yRegRealGLM"]]
+
+    save(modelos, file = paste0(ruta, "data/valueAnual/modelos/GLM-KNN/GLMAn.rda", collapse = ""))
+    save(yOccPredGLM, yOccRealGLM, yRegPredGLM, yRegRealGLM, file = paste0(ruta, "data/valueAnual/resultados/GLM-KNN/GLMAn.rda", collapse = ""))
 }
