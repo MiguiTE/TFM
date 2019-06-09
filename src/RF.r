@@ -9,8 +9,8 @@ library(randomForest)
 # Se pueden cambiar
 ruta = "/home/jovyan/TFM/TFM/"
 
-PCS = T
-ESTACIONES = T
+PCS = F
+ESTACIONES = F
 ANUAL = T
 
 regionaliza = function(dataOccCV, dataRegCV){
@@ -174,7 +174,7 @@ if (PCS){
         }
     }
     if (ANUAL) {
-        load(paste0(ruta, "data/valueAnual/datos/precip/RF/datosAnual.rda", collapse = ""))
+        load(paste0(ruta, "data/valueAnual/datos/RF/datosAnual.rda", collapse = ""))
         resultado = regionalizaPCs(dataOccCV, dataRegCV)
         modelos = resultado[["modelos"]]
         yOccPredRF = resultado[["yOccPredRF"]]
@@ -203,7 +203,7 @@ if (PCS){
         }
     }
     if (ANUAL) {
-        load(paste0(ruta, "data/valueAnual/datos/precip/RF/datosAnual.rda", collapse = ""))
+        load(paste0(ruta, "data/valueAnual/datos/RF/datosAnual.rda", collapse = ""))
         resultado = regionaliza(dataOccCV, dataRegCV)
         modelos = resultado[["modelos"]]
         yOccPredRF = resultado[["yOccPredRF"]]

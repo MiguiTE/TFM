@@ -81,7 +81,7 @@ if (ESTACIONES){
 }
 
 if (ANUAL) {
-    load(paste0(ruta, "data/valueAnual/datos/precip/GLM-KNN/datosAnual.rda", collapse = ""))
+    load(paste0(ruta, "data/valueAnual/datos/GLM-KNN/datosAnual.rda", collapse = ""))
     resultado = regionaliza(dataOccCV, dataRegCV)
     modelos = resultado[["modelos"]]
     yOccPredGLM = resultado[["yOccPredGLM"]]

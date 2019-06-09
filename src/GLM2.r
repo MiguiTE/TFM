@@ -66,7 +66,8 @@ regionaliza = function(dataOccCV, dataRegCV){
         yRegPredGLM[[region]] = prediccionReg
         yRegRealGLM[[region]] = realidadReg
     }
-    return(list(modelos = modelos, yOccPredGLM = yOccPredGLM, yOccRealGLM = yOccRealGLM, yRegPredGLM = yRegPredGLM, yRegRealGLM = yRegRealGLM))
+    timeElapsed = Sys.time() - start 
+    return(list(modelos = modelos, yOccPredGLM = yOccPredGLM, yOccRealGLM = yOccRealGLM, yRegPredGLM = yRegPredGLM, yRegRealGLM = yRegRealGLM, timeElapsed = timeElapsed))
 }
 
 if (ESTACIONES){
@@ -88,7 +89,7 @@ if (ESTACIONES){
 }
 
 if (ANUAL) {
-    load(paste0(ruta, "data/valueAnual/datos/precip/GLM-KNN/datosAnual.rda", collapse = ""))
+    load(paste0(ruta, "data/valueAnual/datos/GLM-KNN/datosAnual.rda", collapse = ""))
     resultado = regionaliza(dataOccCV, dataRegCV)
     modelos = resultado[["modelos"]]
     yOccPredGLM = resultado[["yOccPredGLM"]]

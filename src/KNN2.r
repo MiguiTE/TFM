@@ -17,6 +17,7 @@ regionaliza = function(dataRegCV){
     modelos = list()
     yRegPredKNN = list()
     yRegRealKNN = list()
+    start = Sys.time()
     for(region in 1:n_regions){
         print(paste("Region:", region))
         modelos[[region]] = list()
@@ -45,7 +46,8 @@ regionaliza = function(dataRegCV){
         yRegPredKNN[[region]] = prediccionReg
         yRegRealKNN[[region]] = realidadReg
     }
-    return(list(modelos = modelos, yRegPredKNN = yRegPredKNN, yRegRealKNN = yRegRealKNN))
+    timeElapsed = Sys.time() - start 
+    return(list(modelos = modelos, yRegPredKNN = yRegPredKNN, yRegRealKNN = yRegRealKNN, timeElapsed = timeElapsed))
 }
 
 if (ESTACIONES) {
@@ -57,19 +59,21 @@ if (ESTACIONES) {
         modelos = resultado[["modelos"]]
         yRegPredKNN = resultado[["yRegPredKNN"]]
         yRegRealKNN = resultado[["yRegRealKNN"]]
+        timeElapsed = resultado[["timeElapsed"]]
 
         save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/GLM-KNN/KNN2Est.rda", collapse = ""))
-        save(yRegPredKNN, yRegRealKNN, file = paste0(ruta, "data/resultados/", estacion, "/precip/GLM-KNN/KNN2Est.rda", collapse = ""))
+        save(yRegPredKNN, yRegRealKNN, timeElapsed, file = paste0(ruta, "data/resultados/", estacion, "/precip/GLM-KNN/KNN2Est.rda", collapse = ""))
     }
 }
 
 if (ANUAL) {
-    load(paste0(ruta, "data/valueAnual/datos/precip/GLM-KNN/datosAnual.rda", collapse = ""))
+    load(paste0(ruta, "data/valueAnual/datos/GLM-KNN/datosAnual.rda", collapse = ""))
     resultado = regionaliza(dataRegCV)
     modelos = resultado[["modelos"]]
     yRegPredKNN = resultado[["yRegPredKNN"]]
     yRegRealKNN = resultado[["yRegRealKNN"]]
+    timeElapsed = resultado[["timeElapsed"]]
 
     save(modelos, file = paste0(ruta, "data/valueAnual/modelos/GLM-KNN/KNN2An.rda", collapse = ""))
-    save(yRegPredKNN, yRegRealKNN, file = paste0(ruta, "data/valueAnual/resultados/GLM-KNN/KNN2An.rda", collapse = ""))
+    save(yRegPredKNN, yRegRealKNN, timeElapsed, file = paste0(ruta, "data/valueAnual/resultados/GLM-KNN/KNN2An.rda", collapse = ""))
 }

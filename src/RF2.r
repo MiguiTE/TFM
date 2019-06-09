@@ -10,7 +10,7 @@ ruta = "/home/jovyan/TFM/TFM/"
 codigos = matrix(c(sprintf("%06i", 272), sprintf("%06i", 350), sprintf("%06i", 3946), sprintf("%06i", 232), sprintf("%06i", 355), sprintf("%06i", 32), sprintf("%06i", 3991), sprintf("%06i", 2006), sprintf("%06i", 708), sprintf("%06i", 191), sprintf("%06i", 4002), sprintf("%06i", 58), sprintf("%06i", 1686), sprintf("%06i", 62), sprintf("%06i", 450), sprintf("%06i", 333)), nrow=2, ncol=8)
 estaciones = c("primavera", "verano", "otoño", "invierno")
 
-PCS = T
+PCS = F
 ESTACIONES = T
 ANUAL = T
 
@@ -188,7 +188,7 @@ if (PCS){
         }
     }
     if (ANUAL) {
-        load(paste0(ruta, "data/valueAnual/datos/precip/RF/datosAnual.rda", collapse = ""))
+        load(paste0(ruta, "data/valueAnual/datos/RF/datosAnual.rda", collapse = ""))
         resultado = regionalizaPCs(dataOccCV, dataRegCV)
         modelos = resultado[["modelos"]]
         yOccPredRF = resultado[["yOccPredRF"]]
@@ -219,7 +219,7 @@ if (PCS){
         }
     }
     if (ANUAL) {
-        load(paste0(ruta, "data/valueAnual/datos/precip/RF/datosAnual.rda", collapse = ""))
+        load(paste0(ruta, "data/valueAnual/datos/RF/datosAnual.rda", collapse = ""))
         resultado = regionaliza(dataOccCV, dataRegCV)
         modelos = resultado[["modelos"]]
         yOccPredRF = resultado[["yOccPredRF"]]
