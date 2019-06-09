@@ -9,9 +9,9 @@ ruta = "/home/jovyan/TFM/TFM/"
 
 
 #Iniciar sesión en [UDG-TAP](http://www.meteo.unican.es/udg-tap/home). Además guarda la ruta en donde se encuentra el conjunto de datos.
-#name = readline(prompt = "Nombre de usuario UDG: ")
-#pass = readline(prompt = "Contraseña UDG: ")
-loginUDG(username = "Miguel", password = "sherpa")
+name = readline(prompt = "Nombre de usuario UDG: ")
+pass = readline(prompt = "Contraseña UDG: ")
+loginUDG(username = name, password = pass)
 
 
 ## OBS (DCCMS)
