@@ -1,8 +1,8 @@
 library(transformeR)
 ruta = "/home/doctor/workspace/master/TFM/"
 
-#gcms = c("Canes", "Cnrm", "Gfdl", "Miroc", "MpiLr", "MpiMr", "Noresm")
-gcms = c("Canes")
+gcms = c("Cnrm", "Gfdl", "Miroc", "MpiLr", "MpiMr", "Noresm", "Canes")
+#gcms = c("Canes")
 #gcms = c("Cnrm")
 hist = list()
 hist[["Canes"]] = "canesm2.historical"
@@ -64,7 +64,7 @@ for (gcm in gcms) {
     dev.off()
   }
 }
-gcms = c("Canes", "Cnrm", "Gfdl", "Miroc", "MpiLr", "MpiMr")
+gcms = c("Canes", "Cnrm", "Gfdl", "Miroc", "MpiLr", "MpiMr", "Noresm")
 opcionPatrones = c("P2", "P5", "P7", "P7PCs", "P8PCs")
 colores = c("blue", "green","orange", "purple", "red")
 anios = getYearsAsINDEX(prediccionFinal)
