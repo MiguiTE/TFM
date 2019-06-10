@@ -45,7 +45,7 @@ patronesLegend[["P8PCs"]] = paste0("PCA(",paste0(patronesLegend[["P8"]], collaps
 opcionPatrones = c("P2", "P5")
 
 colores = c("blue", "orange")
-GUARDA = F
+GUARDA = T
 for (gcm in gcms) {
   i = 1
   if (GUARDA){
@@ -73,7 +73,7 @@ aniomax = max(anios)
 aniosT = aniomin:aniomax
 
 vecinos = c(1, 25)
-GUARDA = F
+GUARDA = T
 for(n in vecinos){
   for (gcm in gcms){
     i = 1
