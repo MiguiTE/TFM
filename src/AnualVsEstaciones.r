@@ -4,7 +4,7 @@ library(transformeR)
 library(downscaleR)
 
 ruta = "/home/doctor/workspace/master/TFM/"
-GUARDA = F
+GUARDA = T
 
 codigos = matrix(c(sprintf("%06i", 272), sprintf("%06i", 350), sprintf("%06i", 3946), sprintf("%06i", 232), sprintf("%06i", 355), sprintf("%06i", 32), sprintf("%06i", 3991), sprintf("%06i", 2006), sprintf("%06i", 708), sprintf("%06i", 191), sprintf("%06i", 4002), sprintf("%06i", 58), sprintf("%06i", 1686), sprintf("%06i", 62), sprintf("%06i", 450), sprintf("%06i", 333)), nrow=2, ncol=8)
 
@@ -22,16 +22,12 @@ estaciones[["verano"]] = c(6, 7, 8)
 estaciones[["otoño"]] = c(9, 10, 11)
 
 modelos = c("GLM", "KNN", "RF")
-tiempos = c()
 loadGLM2()
-tiempos[1] = as.numeric(timeElapsed, units = "hours")
 GLM = yValueReg
 loadKNN2()
-tiempos[2] = as.numeric(timeElapsed, units = "hours")
 KNN = yValueReg
 loadRF2PCs()
 RF = yValueReg
-tiempos[3] = as.numeric(timeElapsed, units = "hours")
 for(i in 1:length(GLM)){
   GLM[[i]][["Data"]] = yRegPredGLM[[i]]
   attr(GLM[[i]][["Data"]], "dimensions") <- c("time", "loc")
@@ -75,7 +71,6 @@ for(estacion in names(estaciones)){
       real = binaryGrid(subsetGrid(yValueReg[[i]], season = estaciones[[estacion]]), condition = "GT", threshold = 1)[["Data"]]
       lapply(1:dim(pred)[2], function(j) sum(pred[,j]) / sum(real[,j]))
     })
-    tmp2[[9]] = as.numeric(timeElapsed, units = "mins")
     return(tmp2)
   })
   df = melt(tmp)
@@ -130,7 +125,6 @@ for(estacion in names(estaciones)){
       real = yRegReal[[i]]
       lapply(1:dim(pred)[2], function(j) cor(pred[,j],real[,j], method = "spearman"))
     })
-    tmp2[[9]] = as.numeric(timeElapsed, units = "mins")
     return(tmp2)
   })
   df = melt(tmp)
@@ -163,7 +157,6 @@ for(estacion in names(estaciones)){
       real = yOccReal[[i]]
       lapply(1:dim(pred)[2], function(j) sum(pred[,j]) / sum(real[,j]))
     })
-    tmp2[[9]] = as.numeric(timeElapsed, units = "mins")
     return(tmp2)
   })
   df = melt(tmp)
@@ -178,7 +171,7 @@ for(estacion in names(estaciones)){
 #######################################################################################
 for(estacion in names(estaciones)){
   if(GUARDA){
-    pdf(paste0(ruta, "imagenes/SDII", estacion, "An.pdf", collapse = ""))  
+    pdf(paste0(ruta, "imagenes/SDII", estacion, "Est.pdf", collapse = ""))  
   }
   tmp = lapply(modelos, function(modelo){
     if (modelo == "GLM"){
@@ -195,7 +188,6 @@ for(estacion in names(estaciones)){
       real = yRegReal[[i]]
       lapply(1:dim(pred)[2], function(j) mean(pred[,j][pred[,j] > 1]) / mean(real[,j][real[,j] > 1]))
     })
-    tmp2[[9]] = as.numeric(timeElapsed, units = "mins")
     return(tmp2)
   })
   df = melt(tmp)

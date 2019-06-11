@@ -143,7 +143,7 @@ for(estacion in estaciones){
   df = melt(tmp)
   tiempos = df[is.na(df$L3),]$value
   df = df[!is.na(df$L3),]
-  boxplot(value ~ L1, data = df,ylim = c(0, 1.2), main=paste("SDII", estacion), at = seq(1, length(modelos), by = 1), names = modelos, las = 2)
+  boxplot(value ~ L1, data = df,ylim = c(0.8, 1.6), main=paste("SDII", estacion), at = seq(1, length(modelos), by = 1), names = modelos, las = 2)
   abline(h=1, col = "grey", lty=3, lwd=2)
   par(new = TRUE)
   plot(seq(0.55,13.5, length.out = length(modelos)), tiempos, type = "l", col="lightgrey", axes = FALSE, bty = "n", xlab = "", ylab = "", xlim = c(0,14))

@@ -1,6 +1,6 @@
 ruta = "/home/doctor/workspace/master/TFM/"
 source(paste0(ruta, "src/funcionesCarga.R", collapse = ""))
-GUARDA = F
+GUARDA = T
 modelos = c("GLM",  "KNN", "NNRF2", "RF")
 #pdf("imagenes/Spearman.pdf")
 #par(mfrow=c(2,2), mar=c(5, 4, 4, 3))
