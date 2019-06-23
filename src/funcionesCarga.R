@@ -87,7 +87,7 @@ loadNNRF = function(estacion,modelo){
     load(paste0(ruta, "data/resultados/",estacion,"/precip/RF/NNRFnvecinos", modelo, "Est.rda", collapse=""), envir = .GlobalEnv)
   }
 }
-loadNNRFComp = function(estacion){
-  load(paste0(ruta, "data/resultados/",estacion,"/precip/RF/NNRFnvecinos2EstComp.rda", collapse=""), envir = .GlobalEnv)
+loadNNRFComp = function(estacion, modelo){
+  load(paste0(ruta, "data/resultados/",estacion,"/precip/RF/NNRFnvecinos", modelo, "EstComp.rda", collapse=""), envir = .GlobalEnv)
 }
 estaciones = c("primavera", "verano", "otoño", "invierno")

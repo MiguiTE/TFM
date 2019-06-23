@@ -1,7 +1,7 @@
 ruta = "/home/doctor/workspace/master/TFM/"
 source(paste0(ruta, "src/funcionesCarga.R", collapse = ""))
 GUARDA = T
-modelos = c("GLM",  "KNN", "NNRF2", "RF")
+modelos = c("GLM", "NNRF2", "NNRF12", "RF")
 #pdf("imagenes/Spearman.pdf")
 #par(mfrow=c(2,2), mar=c(5, 4, 4, 3))
 #par(mfrow=c(2,1))
@@ -17,7 +17,7 @@ for(estacion in estaciones){
     }else if (modelo == "RF"){
       loadRFPCs(estacion)
     }else if (grepl(x = modelo, pattern = "NNRF")){
-      loadNNRFComp(estacion)
+      loadNNRFComp(estacion, substr(modelo, 5, 6))
       modelo = "NNRF"
     }
     do.call("<-",list("yRegPred", eval(parse(text = paste0("yRegPred",substr(modelo, 1, 4))))))
@@ -67,7 +67,7 @@ for(estacion in estaciones){
     }else if (modelo == "RF"){
       loadRF(estacion)
     }else if (grepl(x = modelo, pattern = "NNRF")){
-      loadNNRFComp(estacion)
+      loadNNRFComp(estacion, substr(modelo, 5, 6))
       modelo = "NNRF"
     }
     do.call("<-",list("yOccPred", eval(parse(text = paste0("yOccPred",substr(modelo, 1, 4))))))
@@ -117,7 +117,7 @@ for(estacion in estaciones){
     }else if (modelo == "RF"){
       loadRF(estacion)
     }else if (grepl(x = modelo, pattern = "NNRF")){
-      loadNNRFComp(estacion)
+      loadNNRFComp(estacion, substr(modelo, 5, 6))
       modelo = "NNRF"
     }
     do.call("<-",list("yRegPred", eval(parse(text = paste0("yRegPred",substr(modelo, 1, 4))))))
@@ -171,7 +171,7 @@ for(estacion in estaciones){
     }else if (modelo == "RF"){
       loadRF(estacion)
     }else if (grepl(x = modelo, pattern = "NNRF")){
-      loadNNRFComp(estacion)
+      loadNNRFComp(estacion, substr(modelo, 5, 6))
       modelo = "NNRF"
     }
     do.call("<-",list("yRegPred", eval(parse(text = paste0("yRegPred",substr(modelo, 1, 4))))))
@@ -222,7 +222,7 @@ for(estacion in estaciones){
     }else if (modelo == "RF"){
       loadRF(estacion)
     }else if (grepl(x = modelo, pattern = "NNRF")){
-      loadNNRFComp(estacion)
+      loadNNRFComp(estacion, substr(modelo, 5, 6))
       modelo = "NNRF"
     }
     do.call("<-",list("yRegPred", eval(parse(text = paste0("yRegPred",substr(modelo, 1, 4))))))
@@ -271,7 +271,7 @@ for(estacion in estaciones){
     }else if (modelo == "RF"){
       loadRF(estacion)
     }else if (grepl(x = modelo, pattern = "NNRF")){
-      loadNNRFComp(estacion)
+      loadNNRFComp(estacion, substr(modelo, 5, 6))
       modelo = "NNRF"
     }
     do.call("<-",list("yRegPred", eval(parse(text = paste0("yRegPred",substr(modelo, 1, 4))))))
@@ -350,4 +350,46 @@ dev.off()
 for(modelo in modelos){
   rm(list = c(paste0("yRegPred",substr(modelo, 1, 4)), paste0("yRegReal",substr(modelo, 1, 4)), 
               paste0("yOccPred",substr(modelo, 1, 4)), paste0("yOccReal",substr(modelo, 1, 4))))
+}
+
+######################################################################################3
+GUARDA = T
+for(estacion in estaciones){
+  if(GUARDA){
+    pdf(paste0("imagenes/Sesgo", estacion, ".pdf", collapse = ""))  
+  }
+  tmp = lapply(modelos, function(modelo){
+    if (modelo == "GLM"){
+      loadGLM(estacion)
+    }else if (modelo == "KNN"){
+      loadKNN(estacion)
+    }else if (modelo == "RF"){
+      loadRFPCs(estacion)
+    }else if (grepl(x = modelo, pattern = "NNRF")){
+      loadNNRFComp(estacion, substr(modelo, 5, 6))
+      modelo = "NNRF"
+    }
+    do.call("<-",list("yRegPred", eval(parse(text = paste0("yRegPred",substr(modelo, 1, 4))))))
+    do.call("<-",list("yRegReal", eval(parse(text = paste0("yRegReal",substr(modelo, 1, 4))))))
+    tmp2 = lapply(1:length(yRegPred), function(i){
+      pred = yRegPred[[i]]
+      real = yRegReal[[i]]
+      lapply(1:dim(pred)[2], function(j) (mean(pred[,j][pred[,j] > 1]) - mean(real[,j][real[,j] > 1])) / mean(real[,j][real[,j] > 1]))
+    })
+  
+    return(tmp2)
+  })
+  df = melt(tmp)
+  boxplot(value ~ L1, data = df, pos = 1:13, ylim = c(-1,1), main=paste("Sesgo", estacion), at = seq(1, length(modelos), by = 1), names = modelos, las = 2, ylab = "Sesgo")
+  abline(h=0, col = "grey", lty=3, lwd=2)
+  abline(h=1, col = "grey", lty=3, lwd=2)
+  abline(h=-1, col = "grey", lty=3, lwd=2)
+  for(j in 1:length(tmp)){
+    for(i in 1:n_regions){
+      lines(c(j-0.4,j+0.4), rep(mean(unlist(tmp[[j]][[i]])),2), col = colores[i], lw = 2)
+    }
+  }
+  if(GUARDA){
+    dev.off()  
+  }
 }

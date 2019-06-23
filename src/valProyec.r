@@ -1,8 +1,9 @@
+library(loadeR)
 library(transformeR)
 ruta = "/home/doctor/workspace/master/TFM/"
 
-gcms = c("Cnrm", "Gfdl", "Miroc", "MpiLr", "MpiMr", "Noresm", "Canes")
-#gcms = c("Canes")
+#gcms = c("Cnrm", "Gfdl", "Miroc", "MpiLr", "MpiMr", "Noresm", "Canes")
+gcms = c("Canes")
 #gcms = c("Cnrm")
 hist = list()
 hist[["Canes"]] = "canesm2.historical"
@@ -21,6 +22,16 @@ rcp85[["Miroc"]] = "miroc.rcp85"
 rcp85[["MpiLr"]] = "mpi.lr.rcp85"
 rcp85[["MpiMr"]] = "mpi.mr.rcp85"
 rcp85[["Noresm"]] = "noresm.rcp85"
+
+
+urls = list()
+urls[["Canes"]] = "http://meteo.unican.es/tds5/dodsC/cmip5/CCCMA/CANESM2/rcp85/day/cccma_canesm2_rcp85_r1i1p1.ncml"
+urls[["Cnrm"]] = "http://meteo.unican.es/tds5/dodsC/cmip5/CNRM-CERFACS/CNRM-CM5/rcp85/day/cnrm-cerfacs_cnrm-cm5_rcp85_r1i1p1.ncml"
+urls[["Gfdl"]] = "http://meteo.unican.es/tds5/dodsC/cmip5/NOAA-GFDL/GFDL-ESM2M/rcp85/day/noaa-gfdl_gfdl-esm2m_rcp85_r1i1p1.ncml"
+urls[["Miroc"]] = "http://meteo.unican.es/tds5/dodsC/cmip5/MIROC/MIROC-ESM/rcp85/day/miroc_miroc-esm_rcp85_r1i1p1.ncml"
+urls[["MpiLr"]] = "http://meteo.unican.es/tds5/dodsC/cmip5/MPI-M/MPI-ESM-LR/rcp85/day/mpi-m_mpi-esm-lr_rcp85_r1i1p1.ncml"
+urls[["MpiMr"]] = "http://meteo.unican.es/tds5/dodsC/cmip5/MPI-M/MPI-ESM-MR/rcp85/day/mpi-m_mpi-esm-mr_rcp85_r1i1p1.ncml"
+urls[["Noresm"]] = "http://meteo.unican.es/tds5/dodsC/cmip5/NCC/NORESM1-M/rcp85/day/ncc_noresm1-m_rcp85_r1i1p1.ncml"
 
 patrones = list()
 patrones[["P1"]] = c("psl", "ta@85000")
@@ -59,12 +70,26 @@ for (gcm in gcms) {
     lines(2006:2100, serie, col = colores[i])
     i = i + 1
   }
-  legend("topleft", lty = 1, col = colores, legend = c(paste(patronesLegend[["P2"]], collapse = ", "), paste(patronesLegend[["P5"]], collapse = ", ")))
+  # anios = getYearsAsINDEX(prediccionFinal)
+  # aniomin = min(anios)
+  # aniomax = max(anios)
+  # aniosT = aniomin:aniomax
+  # real = loadGridData(urls[[gcm]], var = "pr",  lonLim = c(22, 46), latLim = c(-22, 0))
+  # serie = c()
+  # for(j in 1:length(aniosT)){
+  #   anio = aniosT[j]
+  #   indices = which(anios == anio)
+  #   serie = rbind(serie, colSums(86400 * array3Dto2Dmat(real$Data)[indices,]))
+  # }
+  # serie = rowMeans(serie)
+  lines(2006:2100, serie, col = "black")
+  legend("topleft", lty = 1, col = c(colores), legend = c(paste(patronesLegend[["P2"]], collapse = ", "), paste(patronesLegend[["P5"]], collapse = ", ")))
   if (GUARDA){
     dev.off()
   }
 }
 gcms = c("Canes", "Cnrm", "Gfdl", "Miroc", "MpiLr", "MpiMr", "Noresm")
+#gcms = c("Canes")
 opcionPatrones = c("P2", "P5", "P7", "P7PCs", "P8PCs")
 colores = c("blue", "green","orange", "purple", "red")
 anios = getYearsAsINDEX(prediccionFinal)
@@ -72,15 +97,24 @@ aniomin = min(anios)
 aniomax = max(anios)
 aniosT = aniomin:aniomax
 
-vecinos = c(1, 25)
+vecinos = c(1)
 GUARDA = T
-for(n in vecinos){
-  for (gcm in gcms){
+for (gcm in gcms){
+  for(n in vecinos){
     i = 1
     if(GUARDA){
-      pdf(paste0(ruta, "imagenes/proyeccionRFNvecinos", n, "gcm", gcm, ".pdf", collaspe = ""))   
+      pdf(paste0(ruta, "imagenes/proyeccionRFNvecinos", n, "gcm", gcm, "Todos.pdf", collaspe = ""))   
     }
     plot(1, type="n", xlab="Años", ylab="Pr", xlim=c(2006, 2100), ylim=c(10, 4500), main = paste(gcm, "n vecinos", n))
+    # real = loadGridData(urls[[gcm]], var = "pr",  lonLim = c(22, 46), latLim = c(-22, 0))
+    # serie = c()
+    # for(j in 1:length(aniosT)){
+    #   anio = aniosT[j]
+    #   indices = which(anios == anio)
+    #   serie = rbind(serie, colSums(86400 * array3Dto2Dmat(real$Data)[indices,]))
+    # }
+    # serie = rowMeans(serie)
+    # lines(2006:2100, serie, col = "black")
     for (patron in opcionPatrones){
       if(grepl("PCs", patron)){
         load(paste0(ruta, "data/proyeccion/resultados/pred", gcm, "patron", substr(patron, 1, 2),"RFPCs.rda"))
@@ -97,8 +131,94 @@ for(n in vecinos){
       lines(2006:2100, serie, col = colores[i])
       i = i + 1
     }
-    legend("topleft", lty = 1, col = colores, legend = c(paste(patronesLegend[["P2"]], collapse = ", "), paste(patronesLegend[["P5"]], collapse = ", "), 
+    legend("topleft", lty = 1, col = c(colores), legend = c(paste(patronesLegend[["P2"]], collapse = ", "), paste(patronesLegend[["P5"]], collapse = ", "), 
                                                          paste(patronesLegend[["P7"]], collapse = ", "), paste(patronesLegend[["P7PCs"]], collapse = ", "), paste(patronesLegend[["P8PCs"]], collapse = ", ")))
+    if(GUARDA){
+      dev.off()
+    }
+  }
+}
+
+
+opcionPatrones = c("P2", "P5", "P7")
+vecinos = c(1)
+GUARDA = T
+for (gcm in gcms){
+  for(n in vecinos){
+    i = 1
+    if(GUARDA){
+      pdf(paste0(ruta, "imagenes/proyeccionRFNvecinos", n, "gcm", gcm, "SinPCS.pdf", collaspe = ""))   
+    }
+    plot(1, type="n", xlab="Años", ylab="Pr", xlim=c(2006, 2100), ylim=c(10, 4500), main = paste(gcm, "n vecinos", n))
+    # real = loadGridData(urls[[gcm]], var = "pr",  lonLim = c(22, 46), latLim = c(-22, 0))
+    # serie = c()
+    # for(j in 1:length(aniosT)){
+    #   anio = aniosT[j]
+    #   indices = which(anios == anio)
+    #   serie = rbind(serie, colSums(86400 * array3Dto2Dmat(real$Data)[indices,]))
+    # }
+    # serie = rowMeans(serie)
+    # lines(2006:2100, serie, col = "black")
+    for (patron in opcionPatrones){
+      if(grepl("PCs", patron)){
+        load(paste0(ruta, "data/proyeccion/resultados/pred", gcm, "patron", substr(patron, 1, 2),"RFPCs.rda"))
+      }else{
+        load(paste0(ruta, "data/proyeccion/resultados/pred", gcm, "nvecions", n, "patron", patron, "RF.rda")) 
+      }
+      serie = c()
+      for(j in 1:length(aniosT)){
+        anio = aniosT[j]
+        indices = which(anios == anio)
+        serie = rbind(serie, colSums(prediccionFinal[indices,]))
+      }
+      serie = rowMeans(serie)
+      lines(2006:2100, serie, col = colores[i])
+      i = i + 1
+    }
+    legend("topleft", lty = 1, col = c(colores), legend = c(paste(patronesLegend[["P2"]], collapse = ", "), paste(patronesLegend[["P5"]], collapse = ", "), 
+                                                         paste(patronesLegend[["P7"]], collapse = ", ")))
+    if(GUARDA){
+      dev.off()
+    }
+  }
+}
+
+opcionPatrones = c("P2", "P5")
+vecinos = c(1)
+GUARDA = T
+for (gcm in gcms){
+  for(n in vecinos){
+    i = 1
+    if(GUARDA){
+      pdf(paste0(ruta, "imagenes/proyeccionRFNvecinos", n, "gcm", gcm, "ComoGLM.pdf", collaspe = ""))   
+    }
+    plot(1, type="n", xlab="Años", ylab="Pr", xlim=c(2006, 2100), ylim=c(10, 4500), main = paste(gcm, "n vecinos", n))
+    # real = loadGridData(urls[[gcm]], var = "pr",  lonLim = c(22, 46), latLim = c(-22, 0))
+    # serie = c()
+    # for(j in 1:length(aniosT)){
+    #   anio = aniosT[j]
+    #   indices = which(anios == anio)
+    #   serie = rbind(serie, colSums(86400 * array3Dto2Dmat(real$Data)[indices,]))
+    # }
+    # serie = rowMeans(serie)
+    # lines(2006:2100, serie, col = "black")
+    for (patron in opcionPatrones){
+      if(grepl("PCs", patron)){
+        load(paste0(ruta, "data/proyeccion/resultados/pred", gcm, "patron", substr(patron, 1, 2),"RFPCs.rda"))
+      }else{
+        load(paste0(ruta, "data/proyeccion/resultados/pred", gcm, "nvecions", n, "patron", patron, "RF.rda")) 
+      }
+      serie = c()
+      for(j in 1:length(aniosT)){
+        anio = aniosT[j]
+        indices = which(anios == anio)
+        serie = rbind(serie, colSums(prediccionFinal[indices,]))
+      }
+      serie = rowMeans(serie)
+      lines(2006:2100, serie, col = colores[i])
+      i = i + 1
+    }
+    legend("topleft", lty = 1, col = c(colores), legend = c(paste(patronesLegend[["P2"]], collapse = ", "), paste(patronesLegend[["P5"]], collapse = ", ")))
     if(GUARDA){
       dev.off()
     }

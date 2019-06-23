@@ -300,3 +300,51 @@ for(estacion in estaciones){
     dev.off()  
   }
 }
+#######################################################################################
+for(estacion in estaciones){
+  if(GUARDA){
+    pdf(paste0(ruta, "imagenes/Sesgo", estacion, ".pdf", collapse = ""))  
+  }
+  tmp = lapply(modelos, function(modelo){
+    if (modelo == "GLM"){
+      loadGLM2(estacion)
+    }else if (modelo == "KNN"){
+      loadKNN2(estacion)
+    }else if (modelo == "RF"){
+      loadRF2(estacion)
+    }else if (grepl(x = modelo, pattern = "NNRF")){
+      if(nchar(modelo) == 5){
+        loadNNRF(estacion, substr(modelo, 5, 5))
+      }else{
+        loadNNRF(estacion, substr(modelo, 5, 6))
+      }
+      yOccPredNNRF = yOccPredRF
+      yOccRealNNRF = yOccRealRF
+      yRegPredNNRF = yRegPredRF
+      yRegRealNNRF = yRegRealRF
+    }
+    do.call("<-",list("yRegPred", eval(parse(text = paste0("yRegPred",substr(modelo, 1, 4))))))
+    do.call("<-",list("yRegReal", eval(parse(text = paste0("yRegReal",substr(modelo, 1, 4))))))
+    tmp2 = lapply(1:length(yRegPred), function(i){
+      pred = yRegPred[[i]]
+      real = yRegReal[[i]]
+      lapply(1:dim(pred)[2], function(j) (mean(pred[,j][pred[,j] > 1]) - mean(real[,j][real[,j] > 1])) / mean(real[,j][real[,j] > 1]))
+    })
+    tmp2[[9]] = as.numeric(timeElapsed, units = "mins")
+    return(tmp2)
+  })
+  df = melt(tmp)
+  tiempos = df[is.na(df$L3),]$value
+  df = df[!is.na(df$L3),]
+  boxplot(value ~ L1, data = df, pos = 1:13, ylim = c(-1,1), main=paste("Sesgo", estacion), at = seq(1, length(modelos), by = 1), names = modelos, las = 2, ylab = "Sesgo")
+  abline(h=0, col = "grey", lty=3, lwd=2)
+  abline(h=1, col = "grey", lty=3, lwd=2)
+  abline(h=-1, col = "grey", lty=3, lwd=2)
+  par(new = TRUE)
+  plot(seq(0.55,13.5, length.out = length(modelos)), tiempos, type = "l", col="lightgrey", axes = FALSE, bty = "n", xlab = "", ylab = "", xlim = c(0,14))
+  axis(4)
+  mtext("Tiempo", side=4, line = 2, cex = 1.2)
+  if(GUARDA){
+    dev.off()  
+  }
+}
