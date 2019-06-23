@@ -12,7 +12,8 @@ estaciones = c("primavera", "verano", "otoño", "invierno")
 
 ESTACIONES = F
 ANUAL = F
-COMPLETO2 = T
+COMPLETO = T
+
 regionaliza = function(dataOccCV, dataRegCV, n_vecinos){
     n_regions = length(dataOccCV)
     modelos = list()
@@ -199,21 +200,24 @@ if (ANUAL) {
     }
 }
 
-if (COMPLETO2) {
+if (COMPLETO) {
     estaciones = c("primavera", "verano", "otoño", "invierno")
     for(estacion in estaciones){
         print(paste("Estacion:", estacion))
         load(paste0(ruta, "data/datosEstaciones/",estacion, "/precip/RF/datos.rda", collapse = ""))
-        n_vecinos = 2
-        resultado = regionalizaComp(dataOccCV, dataRegCV, n_vecinos)
-        modelos = resultado[["modelos"]]
-        yOccPredNNRF = resultado[["yOccPredNNRF"]]
-        yOccRealNNRF = resultado[["yOccRealNNRF"]]
-        yRegPredNNRF = resultado[["yRegPredNNRF"]]
-        yRegRealNNRF = resultado[["yRegRealNNRF"]]
-        timeElapsed = resultado[["timeElapsed"]]
+        #vecinos = c(2,12)
+        vecinos = c(12)
+        for (n_vecinos in vecinos){
+            resultado = regionalizaComp(dataOccCV, dataRegCV, n_vecinos)
+            modelos = resultado[["modelos"]]
+            yOccPredNNRF = resultado[["yOccPredNNRF"]]
+            yOccRealNNRF = resultado[["yOccRealNNRF"]]
+            yRegPredNNRF = resultado[["yRegPredNNRF"]]
+            yRegRealNNRF = resultado[["yRegRealNNRF"]]
+            timeElapsed = resultado[["timeElapsed"]]
 
-        save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/RF/RFnvecinos",n_vecinos, "EstComp.rda", collapse = ""))
-        save(yOccPredNNRF, yOccRealNNRF, yRegPredNNRF, yRegRealNNRF, timeElapsed, file = paste0(ruta, "data/resultados/", estacion, "/precip/RF/NNRFnvecinos",n_vecinos, "EstComp.rda", collapse = ""))
+            save(modelos, file = paste0(ruta, "data/modelos/", estacion, "/precip/RF/RFnvecinos",n_vecinos, "EstComp.rda", collapse = ""))
+            save(yOccPredNNRF, yOccRealNNRF, yRegPredNNRF, yRegRealNNRF, timeElapsed, file = paste0(ruta, "data/resultados/", estacion, "/precip/RF/NNRFnvecinos",n_vecinos, "EstComp.rda", collapse = ""))
+        }
     }
 }
